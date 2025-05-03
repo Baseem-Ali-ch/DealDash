@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: 267 100% 66%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 324 100% 85%;
+    --secondary-foreground: 267 100% 66%;
+
+    --accent: 195 87% 71%;
+    --accent-foreground: 0 0% 0%;
+
+    --highlight: 291 91% 75%;
+    --highlight-foreground: 0 0% 100%;
+
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --ring: 267 100% 66%;
+  }
+
+  .dark {
+    --primary: 267 100% 64%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 270 60% 73%;
+    --secondary-foreground: 267 100% 64%;
+
+    --accent: 195 40% 56%;
+    --accent-foreground: 0 0% 100%;
+
+    --highlight: 291 50% 64%;
+    --highlight-foreground: 0 0% 100%;
+
+    --background: 0 0% 7%;
+    --foreground: 0 0% 97%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 97%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --ring: 267 100% 64%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom thin scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
