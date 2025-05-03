@@ -4,14 +4,14 @@ dotenv.config();
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-// import connectDB from "./config/database";
-// import adminRoutes from "./routes/admin";
+import connectDB from "./config/database";
+import adminRoutes from "./routes/admin";
 // import sharedRouter from "./routes/shared";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// connectDB()
+connectDB()
 
 // Middleware
 app.use(cookieParser());
@@ -29,7 +29,7 @@ app.use(
 // Routes
 // app.use("/", userRoutes);
 // app.use('/shared', sharedRouter)
-// app.use("/admin", adminRoutes);
+app.use("/admin", adminRoutes);
 
 // Start the server
 app.listen(PORT, () => {
