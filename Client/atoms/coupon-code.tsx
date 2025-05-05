@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import { Copy } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useState } from "react"
+import { Copy } from "lucide-react";
+import { cn } from "@/lib/utils/utils";
+import { useState } from "react";
 
 interface CouponCodeProps {
-  code: string
-  className?: string
+  code: string;
+  className?: string;
 }
 
 export function CouponCode({ code, className }: CouponCodeProps) {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(code)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div
       className={cn(
         "inline-flex items-center px-2.5 py-1 rounded bg-gray-100 dark:bg-gray-800 font-mono text-sm",
-        className,
+        className
       )}
     >
       <span className="uppercase">{code}</span>
@@ -33,7 +33,11 @@ export function CouponCode({ code, className }: CouponCodeProps) {
       >
         <Copy size={14} />
       </button>
-      {copied && <span className="ml-2 text-xs text-green-600 dark:text-green-400">Copied!</span>}
+      {copied && (
+        <span className="ml-2 text-xs text-green-600 dark:text-green-400">
+          Copied!
+        </span>
+      )}
     </div>
-  )
+  );
 }

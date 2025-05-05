@@ -1,22 +1,29 @@
-"use client"
-import type { PaymentMethod } from "@/lib/data/user-data"
-import { cn } from "@/lib/utils"
-import { CreditCard, Edit, Trash } from "lucide-react"
-import { Button } from "@/atoms/button"
+"use client";
+import type { PaymentMethod } from "@/lib/data/user-data";
+import { cn } from "@/lib/utils/utils";
+import { CreditCard, Edit, Trash } from "lucide-react";
+import { Button } from "@/atoms/button";
 
 interface PaymentMethodItemProps {
-  paymentMethod: PaymentMethod
-  onEdit: (paymentMethod: PaymentMethod) => void
-  onDelete: (id: string) => void
-  onSetDefault: (id: string) => void
+  paymentMethod: PaymentMethod;
+  onEdit: (paymentMethod: PaymentMethod) => void;
+  onDelete: (id: string) => void;
+  onSetDefault: (id: string) => void;
 }
 
-export const PaymentMethodItem = ({ paymentMethod, onEdit, onDelete, onSetDefault }: PaymentMethodItemProps) => {
+export const PaymentMethodItem = ({
+  paymentMethod,
+  onEdit,
+  onDelete,
+  onSetDefault,
+}: PaymentMethodItemProps) => {
   return (
     <div
       className={cn(
         "border rounded-lg p-4",
-        paymentMethod.isDefault ? "border-primary/50 bg-primary/5" : "border-gray-200 dark:border-gray-700",
+        paymentMethod.isDefault
+          ? "border-primary/50 bg-primary/5"
+          : "border-gray-200 dark:border-gray-700"
       )}
     >
       <div className="flex justify-between items-start">
@@ -24,7 +31,9 @@ export const PaymentMethodItem = ({ paymentMethod, onEdit, onDelete, onSetDefaul
           <CreditCard className="h-5 w-5 text-gray-500 dark:text-gray-400" />
           <h3 className="font-medium">{paymentMethod.name}</h3>
           {paymentMethod.isDefault && (
-            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">Default</span>
+            <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+              Default
+            </span>
           )}
         </div>
         <div className="flex gap-2">
@@ -54,10 +63,15 @@ export const PaymentMethodItem = ({ paymentMethod, onEdit, onDelete, onSetDefaul
       </div>
 
       {!paymentMethod.isDefault && (
-        <Button variant="outline" size="sm" className="mt-3" onClick={() => onSetDefault(paymentMethod.id)}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-3"
+          onClick={() => onSetDefault(paymentMethod.id)}
+        >
           Set as Default
         </Button>
       )}
     </div>
-  )
-}
+  );
+};

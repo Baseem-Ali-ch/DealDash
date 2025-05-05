@@ -1,22 +1,30 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import type { DateRange } from "react-day-picker"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import type { DateRange } from "react-day-picker";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils/utils";
 
 interface DateRangePickerProps {
-  dateRange: DateRange | undefined
-  onDateRangeChange: (range: DateRange | undefined) => void
-  className?: string
+  dateRange: DateRange | undefined;
+  onDateRangeChange: (range: DateRange | undefined) => void;
+  className?: string;
 }
 
-export function DateRangePicker({ dateRange, onDateRangeChange, className }: DateRangePickerProps) {
-  const [isOpen, setIsOpen] = useState(false)
+export function DateRangePicker({
+  dateRange,
+  onDateRangeChange,
+  className,
+}: DateRangePickerProps) {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -25,13 +33,17 @@ export function DateRangePicker({ dateRange, onDateRangeChange, className }: Dat
           <Button
             id="date"
             variant={"outline"}
-            className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
+            className={cn(
+              "w-full justify-start text-left font-normal",
+              !dateRange && "text-muted-foreground"
+            )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {dateRange?.from ? (
               dateRange.to ? (
                 <>
-                  {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}
+                  {format(dateRange.from, "LLL dd, y")} -{" "}
+                  {format(dateRange.to, "LLL dd, y")}
                 </>
               ) : (
                 format(dateRange.from, "LLL dd, y")
@@ -48,9 +60,9 @@ export function DateRangePicker({ dateRange, onDateRangeChange, className }: Dat
             defaultMonth={dateRange?.from}
             selected={dateRange}
             onSelect={(range) => {
-              onDateRangeChange(range)
+              onDateRangeChange(range);
               if (range?.to) {
-                setIsOpen(false)
+                setIsOpen(false);
               }
             }}
             numberOfMonths={2}
@@ -58,5 +70,5 @@ export function DateRangePicker({ dateRange, onDateRangeChange, className }: Dat
         </PopoverContent>
       </Popover>
     </div>
-  )
+  );
 }

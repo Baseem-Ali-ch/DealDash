@@ -1,46 +1,59 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import { ProductCard } from "@/molecules/product-card"
-import { IconButton } from "@/atoms/icon-button"
-import { Button } from "@/atoms/button"
-import { ProductQuickView } from "@/organisms/product-quick-view"
-import { cn } from "@/lib/utils"
-import { products } from "@/lib/data/products"
+import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ProductCard } from "@/molecules/product-card";
+import { IconButton } from "@/atoms/icon-button";
+import { Button } from "@/atoms/button";
+import { ProductQuickView } from "@/organisms/product-quick-view";
+import { cn } from "@/lib/utils/utils";
+import { products } from "@/lib/data/products";
 
 interface ProductSectionProps {
-  title: string
-  subtitle?: string
-  productIds?: string[]
-  viewAllLink?: string
-  className?: string
+  title: string;
+  subtitle?: string;
+  productIds?: string[];
+  viewAllLink?: string;
+  className?: string;
 }
 
-export function ProductSection({ title, subtitle, productIds, viewAllLink, className }: ProductSectionProps) {
-  const [selectedProduct, setSelectedProduct] = useState<any | null>(null)
-  const [scrollPosition, setScrollPosition] = useState(0)
+export function ProductSection({
+  title,
+  subtitle,
+  productIds,
+  viewAllLink,
+  className,
+}: ProductSectionProps) {
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   // Filter products based on provided IDs or use first 6 products
-  const displayProducts = productIds ? products.filter((p) => productIds.includes(p.id)) : products.slice(0, 6)
+  const displayProducts = productIds
+    ? products.filter((p) => productIds.includes(p.id))
+    : products.slice(0, 6);
 
   const handleScroll = (direction: "left" | "right") => {
-    const container = document.getElementById(`product-container-${title.replace(/\s+/g, "-").toLowerCase()}`)
-    if (!container) return
+    const container = document.getElementById(
+      `product-container-${title.replace(/\s+/g, "-").toLowerCase()}`
+    );
+    if (!container) return;
 
-    const scrollAmount = 300
+    const scrollAmount = 300;
     const newPosition =
       direction === "left"
         ? Math.max(0, scrollPosition - scrollAmount)
-        : Math.min(container.scrollWidth - container.clientWidth, scrollPosition + scrollAmount)
+        : Math.min(
+            container.scrollWidth - container.clientWidth,
+            scrollPosition + scrollAmount
+          );
 
     container.scrollTo({
       left: newPosition,
       behavior: "smooth",
-    })
+    });
 
-    setScrollPosition(newPosition)
-  }
+    setScrollPosition(newPosition);
+  };
 
   return (
     <section className={cn("py-12", className)}>
@@ -48,10 +61,16 @@ export function ProductSection({ title, subtitle, productIds, viewAllLink, class
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold">{title}</h2>
-            {subtitle && <p className="text-muted-foreground mt-2">{subtitle}</p>}
+            {subtitle && (
+              <p className="text-muted-foreground mt-2">{subtitle}</p>
+            )}
           </div>
           {viewAllLink && (
-            <Button variant="outline" className="mt-4 md:mt-0" onClick={() => (window.location.href = viewAllLink)}>
+            <Button
+              variant="outline"
+              className="mt-4 md:mt-0"
+              onClick={() => (window.location.href = viewAllLink)}
+            >
               View All
             </Button>
           )}
@@ -90,13 +109,18 @@ export function ProductSection({ title, subtitle, productIds, viewAllLink, class
                 onClick={() => handleScroll("left")}
                 disabled={scrollPosition === 0}
                 aria-label="Scroll left"
-                className={scrollPosition === 0 ? "opacity-50 cursor-not-allowed" : ""}
+                className={
+                  scrollPosition === 0 ? "opacity-50 cursor-not-allowed" : ""
+                }
               >
                 <ChevronLeft className="h-6 w-6" />
               </IconButton>
             </div>
             <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-5">
-              <IconButton onClick={() => handleScroll("right")} aria-label="Scroll right">
+              <IconButton
+                onClick={() => handleScroll("right")}
+                aria-label="Scroll right"
+              >
                 <ChevronRight className="h-6 w-6" />
               </IconButton>
             </div>
@@ -104,7 +128,12 @@ export function ProductSection({ title, subtitle, productIds, viewAllLink, class
         </div>
       </div>
 
-      {selectedProduct && <ProductQuickView product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
+      {selectedProduct && (
+        <ProductQuickView
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
     </section>
-  )
+  );
 }

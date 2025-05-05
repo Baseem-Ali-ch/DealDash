@@ -3,7 +3,7 @@ import { HttpStatusCode } from "../../constants/httpStatusCodes";
 import { StatusMessage } from "../../constants/responseMessages";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-// import { AdminModel } from "../../models/Admin";
+import { AdminModel } from "../../models/Admin";
 
 // This controller handles the login functionality for admin users
 export const login = async (req: Request, res: Response): Promise<any> => {
@@ -63,8 +63,7 @@ export const login = async (req: Request, res: Response): Promise<any> => {
     });
 
     res.status(HttpStatusCode.OK).json({
-      message: "Login successful.",
-      data: admin,
+      message: StatusMessage.SUCCESS,
     });
   } catch (error) {
     console.log("Error in login:", error);

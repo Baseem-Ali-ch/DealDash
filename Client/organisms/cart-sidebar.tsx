@@ -9,7 +9,7 @@ import {
 import { Button } from "@/atoms/button";
 import { X, ShoppingBag, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { useRouter } from "next/navigation";
 
 export function CartSidebar() {
@@ -25,12 +25,12 @@ export function CartSidebar() {
 
   const handleCheckout = () => {
     dispatch(toggleCart()); // Close the cart sidebar
-    router.push('/checkout');
+    router.push("/checkout");
   };
 
   const handleViewCart = () => {
     dispatch(toggleCart()); // Close the cart sidebar
-    router.push('/cart');
+    router.push("/cart");
   };
 
   return (

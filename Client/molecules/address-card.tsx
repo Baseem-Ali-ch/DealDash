@@ -1,29 +1,34 @@
-"use client"
+"use client";
 
-import { cn } from "@/lib/utils"
-import { Check } from "lucide-react"
+import { cn } from "@/lib/utils/utils";
+import { Check } from "lucide-react";
 
 export interface Address {
-  id: string
-  fullName: string
-  addressLine1: string
-  addressLine2?: string
-  city: string
-  state: string
-  postalCode: string
-  country: string
-  phone: string
-  isDefault?: boolean
+  id: string;
+  fullName: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+  isDefault?: boolean;
 }
 
 interface AddressCardProps {
-  address: Address
-  isSelected?: boolean
-  selectable?: boolean
-  onSelect?: (address: Address) => void
+  address: Address;
+  isSelected?: boolean;
+  selectable?: boolean;
+  onSelect?: (address: Address) => void;
 }
 
-export function AddressCard({ address, isSelected = false, selectable = true, onSelect }: AddressCardProps) {
+export function AddressCard({
+  address,
+  isSelected = false,
+  selectable = true,
+  onSelect,
+}: AddressCardProps) {
   return (
     <div
       className={cn(
@@ -31,11 +36,11 @@ export function AddressCard({ address, isSelected = false, selectable = true, on
         selectable && "cursor-pointer transition-colors",
         selectable && isSelected
           ? "border-primary bg-primary/5 dark:bg-primary/10"
-          : selectable && "hover:border-primary/50 hover:bg-muted/50",
+          : selectable && "hover:border-primary/50 hover:bg-muted/50"
       )}
       onClick={() => {
         if (selectable && onSelect) {
-          onSelect(address)
+          onSelect(address);
         }
       }}
     >
@@ -60,5 +65,5 @@ export function AddressCard({ address, isSelected = false, selectable = true, on
         </div>
       )}
     </div>
-  )
+  );
 }

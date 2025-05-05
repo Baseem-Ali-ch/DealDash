@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Check, CreditCard } from "lucide-react";
 import { Button } from "@/atoms/button";
 import { Input } from "@/atoms/input";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils/utils";
 import { useAppSelector } from "@/lib/hooks/use-redux";
 import { toast } from "sonner";
 

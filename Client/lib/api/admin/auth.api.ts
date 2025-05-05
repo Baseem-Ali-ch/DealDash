@@ -5,15 +5,21 @@ export const login = async (
   password: string
 ): Promise<{ success: boolean; message?: string }> => {
   try {
-    await apiFetch(`${process.env.NEXT_PUBLIC_BACKEND_API}/admin/login`, {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await apiFetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_API}/admin/login`,
+      {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    return { success: true };
+    return {
+      success: true,
+      message: response.message,
+    };
   } catch (error: any) {
     console.error("Login API error:", error);
     return {

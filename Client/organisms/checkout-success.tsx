@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/atoms/button"
-import { CheckoutSummary } from "@/molecules/checkout-summary"
-import { AddressCard, type Address } from "@/molecules/address-card"
-import { Check, Package, Printer, ShoppingBag } from "lucide-react"
-import { formatPrice } from "@/lib/utils"
+import Link from "next/link";
+import { Button } from "@/atoms/button";
+import { CheckoutSummary } from "@/molecules/checkout-summary";
+import { AddressCard, type Address } from "@/molecules/address-card";
+import { Check, Package, Printer, ShoppingBag } from "lucide-react";
+import { formatPrice } from "@/lib/utils/utils";
 
 interface CheckoutSuccessProps {
-  orderNumber: string
-  orderDate: string
+  orderNumber: string;
+  orderDate: string;
   items: Array<{
-    id: string
-    name: string
-    price: number
-    quantity: number
-    image: string
-  }>
-  subtotal: number
-  shipping: number
-  tax: number
-  discount: number
-  total: number
-  estimatedDelivery: string
-  shippingAddress: Address
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    image: string;
+  }>;
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  discount: number;
+  total: number;
+  estimatedDelivery: string;
+  shippingAddress: Address;
 }
 
 export function CheckoutSuccess({
@@ -46,7 +46,8 @@ export function CheckoutSuccess({
         </div>
         <h2 className="text-2xl font-bold">Order Confirmed!</h2>
         <p className="mt-2 text-muted-foreground">
-          Thank you for your order. We&apos;ve received your order and will begin processing it soon.
+          Thank you for your order. We&apos;ve received your order and will
+          begin processing it soon.
         </p>
       </div>
 
@@ -54,7 +55,9 @@ export function CheckoutSuccess({
         <div className="flex flex-col justify-between gap-4 sm:flex-row">
           <div>
             <h3 className="text-lg font-semibold">Order #{orderNumber}</h3>
-            <p className="text-sm text-muted-foreground">Placed on {orderDate}</p>
+            <p className="text-sm text-muted-foreground">
+              Placed on {orderDate}
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" className="gap-1">
@@ -73,7 +76,8 @@ export function CheckoutSuccess({
             <h4 className="mb-2 font-medium">Shipping Information</h4>
             <AddressCard address={shippingAddress} selectable={false} />
             <p className="mt-4 text-sm">
-              <span className="font-medium">Estimated Delivery:</span> {estimatedDelivery}
+              <span className="font-medium">Estimated Delivery:</span>{" "}
+              {estimatedDelivery}
             </p>
           </div>
 
@@ -81,12 +85,16 @@ export function CheckoutSuccess({
             <h4 className="mb-2 font-medium">Payment Information</h4>
             <div className="rounded-lg border p-4">
               <p className="font-medium">Credit Card</p>
-              <p className="text-sm text-muted-foreground">Ending in •••• 1234</p>
-              <p className="mt-2 text-sm">
-                <span className="font-medium">Billing Address:</span> Same as shipping
+              <p className="text-sm text-muted-foreground">
+                Ending in •••• 1234
               </p>
               <p className="mt-2 text-sm">
-                <span className="font-medium">Total Charged:</span> {formatPrice(total)}
+                <span className="font-medium">Billing Address:</span> Same as
+                shipping
+              </p>
+              <p className="mt-2 text-sm">
+                <span className="font-medium">Total Charged:</span>{" "}
+                {formatPrice(total)}
               </p>
             </div>
           </div>
@@ -117,5 +125,5 @@ export function CheckoutSuccess({
         </Button>
       </div>
     </div>
-  )
+  );
 }

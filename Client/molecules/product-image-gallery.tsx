@@ -6,7 +6,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import { Button } from "@/atoms/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface ProductImageGalleryProps {
   images: string[];

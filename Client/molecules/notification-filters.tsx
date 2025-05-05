@@ -1,18 +1,28 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { Search, X, Filter } from "lucide-react"
-import { useDispatch, useSelector } from "react-redux"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import type { RootState } from "@/lib/store/store"
+import type React from "react";
+import { Search, X, Filter } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import type { RootState } from "@/lib/store/store";
 import {
   setSearchFilter,
   setCategoryFilter,
@@ -20,34 +30,39 @@ import {
   setPriorityFilter,
   setStatusFilter,
   resetFilters,
-} from "@/lib/store/slices/notificationsSlice"
-import type { NotificationCategory, NotificationStatus } from "@/lib/types/notifications"
+} from "@/lib/store/slices/notificationsSlice";
+import type {
+  NotificationCategory,
+  NotificationStatus,
+} from "@/lib/types/notifications";
 
 export function NotificationFilters() {
-  const dispatch = useDispatch()
-  const filters = useSelector((state: RootState) => state.notifications.filters)
+  const dispatch = useDispatch();
+  const filters = useSelector(
+    (state: RootState) => state.notifications.filters
+  );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setSearchFilter(e.target.value))
-  }
+    dispatch(setSearchFilter(e.target.value));
+  };
 
   const handleCategoryChange = (value: string) => {
-    dispatch(setCategoryFilter(value as NotificationCategory | "all"))
-  }
+    dispatch(setCategoryFilter(value as NotificationCategory | "all"));
+  };
 
   const handleStatusChange = (value: string) => {
-    dispatch(setStatusFilter(value as NotificationStatus | "all"))
-  }
+    dispatch(setStatusFilter(value as NotificationStatus | "all"));
+  };
 
   const handlePriorityChange = (value: string, checked: boolean) => {
-    const currentPriorities = [...filters.priority]
+    const currentPriorities = [...filters.priority];
 
     if (checked) {
-      dispatch(setPriorityFilter([...currentPriorities, value]))
+      dispatch(setPriorityFilter([...currentPriorities, value]));
     } else {
-      dispatch(setPriorityFilter(currentPriorities.filter((p) => p !== value)))
+      dispatch(setPriorityFilter(currentPriorities.filter((p) => p !== value)));
     }
-  }
+  };
 
   const handleDateFromChange = (date: Date | undefined) => {
     if (date) {
@@ -55,10 +70,10 @@ export function NotificationFilters() {
         setDateRangeFilter({
           from: date.toISOString(),
           to: filters.dateRange.to,
-        }),
-      )
+        })
+      );
     }
-  }
+  };
 
   const handleDateToChange = (date: Date | undefined) => {
     if (date) {
@@ -66,14 +81,14 @@ export function NotificationFilters() {
         setDateRangeFilter({
           from: filters.dateRange.from,
           to: date.toISOString(),
-        }),
-      )
+        })
+      );
     }
-  }
+  };
 
   const handleResetFilters = () => {
-    dispatch(resetFilters())
-  }
+    dispatch(resetFilters());
+  };
 
   const hasActiveFilters = () => {
     return (
@@ -83,8 +98,8 @@ export function NotificationFilters() {
       filters.priority.length > 0 ||
       filters.dateRange.from !== null ||
       filters.dateRange.to !== null
-    )
-  }
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -151,7 +166,9 @@ export function NotificationFilters() {
                     <Checkbox
                       id="priority-critical"
                       checked={filters.priority.includes("critical")}
-                      onCheckedChange={(checked) => handlePriorityChange("critical", checked as boolean)}
+                      onCheckedChange={(checked) =>
+                        handlePriorityChange("critical", checked as boolean)
+                      }
                     />
                     <Label htmlFor="priority-critical">Critical</Label>
                   </div>
@@ -159,7 +176,9 @@ export function NotificationFilters() {
                     <Checkbox
                       id="priority-high"
                       checked={filters.priority.includes("high")}
-                      onCheckedChange={(checked) => handlePriorityChange("high", checked as boolean)}
+                      onCheckedChange={(checked) =>
+                        handlePriorityChange("high", checked as boolean)
+                      }
                     />
                     <Label htmlFor="priority-high">High</Label>
                   </div>
@@ -167,7 +186,9 @@ export function NotificationFilters() {
                     <Checkbox
                       id="priority-medium"
                       checked={filters.priority.includes("medium")}
-                      onCheckedChange={(checked) => handlePriorityChange("medium", checked as boolean)}
+                      onCheckedChange={(checked) =>
+                        handlePriorityChange("medium", checked as boolean)
+                      }
                     />
                     <Label htmlFor="priority-medium">Medium</Label>
                   </div>
@@ -175,7 +196,9 @@ export function NotificationFilters() {
                     <Checkbox
                       id="priority-low"
                       checked={filters.priority.includes("low")}
-                      onCheckedChange={(checked) => handlePriorityChange("low", checked as boolean)}
+                      onCheckedChange={(checked) =>
+                        handlePriorityChange("low", checked as boolean)
+                      }
                     />
                     <Label htmlFor="priority-low">Low</Label>
                   </div>
@@ -190,16 +213,22 @@ export function NotificationFilters() {
                           variant="outline"
                           className={cn(
                             "justify-start text-left font-normal",
-                            !filters.dateRange.from && "text-muted-foreground",
+                            !filters.dateRange.from && "text-muted-foreground"
                           )}
                         >
-                          {filters.dateRange.from ? format(new Date(filters.dateRange.from), "PPP") : "From date"}
+                          {filters.dateRange.from
+                            ? format(new Date(filters.dateRange.from), "PPP")
+                            : "From date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
-                          selected={filters.dateRange.from ? new Date(filters.dateRange.from) : undefined}
+                          selected={
+                            filters.dateRange.from
+                              ? new Date(filters.dateRange.from)
+                              : undefined
+                          }
                           onSelect={handleDateFromChange}
                           initialFocus
                         />
@@ -212,16 +241,22 @@ export function NotificationFilters() {
                           variant="outline"
                           className={cn(
                             "justify-start text-left font-normal",
-                            !filters.dateRange.to && "text-muted-foreground",
+                            !filters.dateRange.to && "text-muted-foreground"
                           )}
                         >
-                          {filters.dateRange.to ? format(new Date(filters.dateRange.to), "PPP") : "To date"}
+                          {filters.dateRange.to
+                            ? format(new Date(filters.dateRange.to), "PPP")
+                            : "To date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
-                          selected={filters.dateRange.to ? new Date(filters.dateRange.to) : undefined}
+                          selected={
+                            filters.dateRange.to
+                              ? new Date(filters.dateRange.to)
+                              : undefined
+                          }
                           onSelect={handleDateToChange}
                           initialFocus
                         />
@@ -243,5 +278,5 @@ export function NotificationFilters() {
         </div>
       )}
     </div>
-  )
+  );
 }

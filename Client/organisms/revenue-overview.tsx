@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowDown, ArrowUp } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowDown, ArrowUp } from "lucide-react";
+import { cn } from "@/lib/utils/utils";
 
 interface RevenueMetric {
-  title: string
-  value: string
+  title: string;
+  value: string;
   change: {
-    value: number
-    trend: "up" | "down" | "neutral"
-  }
-  icon: React.ReactNode
+    value: number;
+    trend: "up" | "down" | "neutral";
+  };
+  icon: React.ReactNode;
 }
 
 interface RevenueOverviewProps {
   metrics: {
-    daily: RevenueMetric[]
-    weekly: RevenueMetric[]
-    monthly: RevenueMetric[]
-    yearly: RevenueMetric[]
-  }
+    daily: RevenueMetric[];
+    weekly: RevenueMetric[];
+    monthly: RevenueMetric[];
+    yearly: RevenueMetric[];
+  };
 }
 
 export function RevenueOverview({ metrics }: RevenueOverviewProps) {
@@ -70,7 +70,7 @@ export function RevenueOverview({ metrics }: RevenueOverviewProps) {
         </div>
       </TabsContent>
     </Tabs>
-  )
+  );
 }
 
 function MetricCard({ metric }: { metric: RevenueMetric }) {
@@ -87,16 +87,20 @@ function MetricCard({ metric }: { metric: RevenueMetric }) {
             className={cn(
               "inline-flex items-center font-medium",
               metric.change.trend === "up" && "text-green-500",
-              metric.change.trend === "down" && "text-red-500",
+              metric.change.trend === "down" && "text-red-500"
             )}
           >
-            {metric.change.trend === "up" && <ArrowUp className="mr-1 h-3 w-3" />}
-            {metric.change.trend === "down" && <ArrowDown className="mr-1 h-3 w-3" />}
+            {metric.change.trend === "up" && (
+              <ArrowUp className="mr-1 h-3 w-3" />
+            )}
+            {metric.change.trend === "down" && (
+              <ArrowDown className="mr-1 h-3 w-3" />
+            )}
             {metric.change.value}%
           </span>{" "}
           from previous period
         </p>
       </CardContent>
     </Card>
-  )
+  );
 }

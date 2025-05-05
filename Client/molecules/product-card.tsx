@@ -1,32 +1,32 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { Heart, ShoppingCart, Star } from "lucide-react"
-import { Button } from "@/atoms/button"
-import { Badge } from "@/atoms/badge"
-import { useAppDispatch, useAppSelector } from "@/lib/hooks/use-redux"
-import { addToCart } from "@/lib/store/slices/cartSlice"
-import { toggleWishlist } from "@/lib/store/slices/wishlistSlice"
-import { formatPrice } from "@/lib/utils"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Heart, ShoppingCart, Star } from "lucide-react";
+import { Button } from "@/atoms/button";
+import { Badge } from "@/atoms/badge";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/use-redux";
+import { addToCart } from "@/lib/store/slices/cartSlice";
+import { toggleWishlist } from "@/lib/store/slices/wishlistSlice";
+import { formatPrice } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface ProductCardProps {
-  id: string
-  name: string
-  slug: string
-  price: number
-  originalPrice?: number
-  image: string
-  rating: number
-  reviewCount: number
-  inStock: boolean
-  category: string
-  brand: string
-  isGridView?: boolean
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  rating: number;
+  reviewCount: number;
+  inStock: boolean;
+  category: string;
+  brand: string;
+  isGridView?: boolean;
 }
 
 export function ProductCard({
@@ -43,41 +43,43 @@ export function ProductCard({
   brand,
   isGridView = true,
 }: ProductCardProps) {
-  const dispatch = useAppDispatch()
-  const wishlistItems = useAppSelector((state) => state.wishlist.items)
-  const isWishlisted = wishlistItems.some((item) => item.id === id)
-  const [isHovered, setIsHovered] = useState(false)
-  const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const dispatch = useAppDispatch();
+  const wishlistItems = useAppSelector((state) => state.wishlist.items);
+  const isWishlisted = wishlistItems.some((item) => item.id === id);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-  const discountPercentage = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : null
+  const discountPercentage = originalPrice
+    ? Math.round(((originalPrice - price) / originalPrice) * 100)
+    : null;
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsAddingToCart(true)
+    e.preventDefault();
+    e.stopPropagation();
+    setIsAddingToCart(true);
     dispatch(
       addToCart({
         id,
         name,
         price,
         image,
-      }),
-    )
-    setTimeout(() => setIsAddingToCart(false), 1000)
-  }
+      })
+    );
+    setTimeout(() => setIsAddingToCart(false), 1000);
+  };
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     dispatch(
       toggleWishlist({
         id,
         name,
         price,
         image,
-      }),
-    )
-  }
+      })
+    );
+  };
 
   if (isGridView) {
     return (
@@ -102,13 +104,15 @@ export function ProductCard({
           )}
           {!inStock && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-              <span className="text-lg font-semibold text-white">Out of Stock</span>
+              <span className="text-lg font-semibold text-white">
+                Out of Stock
+              </span>
             </div>
           )}
           <div
             className={cn(
               "absolute right-2 top-2 flex flex-col gap-2 transition-opacity",
-              isHovered ? "opacity-100" : "opacity-0 md:opacity-100",
+              isHovered ? "opacity-100" : "opacity-0 md:opacity-100"
             )}
           >
             <Button
@@ -116,9 +120,18 @@ export function ProductCard({
               size="icon"
               className="h-8 w-8 bg-white/80 dark:bg-gray-800/80"
               onClick={handleToggleWishlist}
-              aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              aria-label={
+                isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+              }
             >
-              <Heart className={cn("h-4 w-4", isWishlisted ? "fill-highlight text-highlight" : "text-gray-600 dark:text-white")} />
+              <Heart
+                className={cn(
+                  "h-4 w-4",
+                  isWishlisted
+                    ? "fill-highlight text-highlight"
+                    : "text-gray-600 dark:text-white"
+                )}
+              />
             </Button>
           </div>
         </div>
@@ -132,11 +145,17 @@ export function ProductCard({
               </span>
             </div>
           </div>
-          <h3 className="mb-2 flex-1 text-sm font-medium line-clamp-2">{name}</h3>
+          <h3 className="mb-2 flex-1 text-sm font-medium line-clamp-2">
+            {name}
+          </h3>
           <div className="mb-3 flex items-center">
-            <span className="font-semibold text-primary">{formatPrice(price)}</span>
+            <span className="font-semibold text-primary">
+              {formatPrice(price)}
+            </span>
             {originalPrice && (
-              <span className="ml-2 text-sm text-muted-foreground line-through">{formatPrice(originalPrice)}</span>
+              <span className="ml-2 text-sm text-muted-foreground line-through">
+                {formatPrice(originalPrice)}
+              </span>
             )}
           </div>
           <Button
@@ -157,7 +176,7 @@ export function ProductCard({
           </Button>
         </div>
       </Link>
-    )
+    );
   }
 
   // List view
@@ -183,7 +202,9 @@ export function ProductCard({
         )}
         {!inStock && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-            <span className="text-lg font-semibold text-white">Out of Stock</span>
+            <span className="text-lg font-semibold text-white">
+              Out of Stock
+            </span>
           </div>
         )}
       </div>
@@ -203,13 +224,18 @@ export function ProductCard({
         </div>
         <h3 className="mb-2 text-base font-medium">{name}</h3>
         <p className="mb-4 text-sm text-muted-foreground line-clamp-2">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore.
         </p>
         <div className="mt-auto flex items-center justify-between">
           <div className="flex items-center">
-            <span className="font-semibold text-primary">{formatPrice(price)}</span>
+            <span className="font-semibold text-primary">
+              {formatPrice(price)}
+            </span>
             {originalPrice && (
-              <span className="ml-2 text-sm text-muted-foreground line-through">{formatPrice(originalPrice)}</span>
+              <span className="ml-2 text-sm text-muted-foreground line-through">
+                {formatPrice(originalPrice)}
+              </span>
             )}
           </div>
           <div className="flex gap-2">
@@ -217,11 +243,25 @@ export function ProductCard({
               variant={isWishlisted ? "secondary" : "outline"}
               size="sm"
               onClick={handleToggleWishlist}
-              aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              aria-label={
+                isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+              }
             >
-              <Heart className={cn("h-4 w-4", isWishlisted ? "fill-highlight text-highlight" : "text-gray-600")} />
+              <Heart
+                className={cn(
+                  "h-4 w-4",
+                  isWishlisted
+                    ? "fill-highlight text-highlight"
+                    : "text-gray-600"
+                )}
+              />
             </Button>
-            <Button variant="primary" size="sm" onClick={handleAddToCart} disabled={!inStock || isAddingToCart}>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleAddToCart}
+              disabled={!inStock || isAddingToCart}
+            >
               {isAddingToCart ? (
                 "Added!"
               ) : (
@@ -235,5 +275,5 @@ export function ProductCard({
         </div>
       </div>
     </Link>
-  )
+  );
 }

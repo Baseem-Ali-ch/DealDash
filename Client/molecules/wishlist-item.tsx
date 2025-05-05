@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ShoppingCart, Trash2, AlertTriangle } from "lucide-react"
-import { motion } from "framer-motion"
+import { useState } from "react";
+import { ShoppingCart, Trash2, AlertTriangle } from "lucide-react";
+import { motion } from "framer-motion";
 
-import { Button } from "@/atoms/button"
-import { Badge } from "@/atoms/badge"
-import { formatPrice } from "@/lib/utils"
-import { addToCart } from "@/lib/store/slices/cartSlice"
-import { removeFromWishlist } from "@/lib/store/slices/wishlistSlice"
-import { useAppDispatch } from "@/lib/hooks/use-redux"
+import { Button } from "@/atoms/button";
+import { Badge } from "@/atoms/badge";
+import { formatPrice } from "@/lib/utils/utils";
+import { addToCart } from "@/lib/store/slices/cartSlice";
+import { removeFromWishlist } from "@/lib/store/slices/wishlistSlice";
+import { useAppDispatch } from "@/lib/hooks/use-redux";
 
 export interface WishlistItemProps {
-  id: string
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  slug: string
-  addedPrice?: number
-  inStock?: boolean
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  slug: string;
+  addedPrice?: number;
+  inStock?: boolean;
 }
 
 export function WishlistItem({
@@ -32,25 +32,25 @@ export function WishlistItem({
   addedPrice,
   inStock = true,
 }: WishlistItemProps) {
-  const dispatch = useAppDispatch()
-  const [isRemoving, setIsRemoving] = useState(false)
+  const dispatch = useAppDispatch();
+  const [isRemoving, setIsRemoving] = useState(false);
 
   const handleMoveToCart = () => {
-    dispatch(addToCart({ id, name, price, image }))
-    dispatch(removeFromWishlist(id))
-  }
+    dispatch(addToCart({ id, name, price, image }));
+    dispatch(removeFromWishlist(id));
+  };
 
   const handleRemove = () => {
-    setIsRemoving(true)
+    setIsRemoving(true);
     // Delay removal to allow animation to complete
     setTimeout(() => {
-      dispatch(removeFromWishlist(id))
-    }, 300)
-  }
+      dispatch(removeFromWishlist(id));
+    }, 300);
+  };
 
-  const priceChanged = addedPrice !== undefined && addedPrice !== price
-  const priceIncreased = addedPrice !== undefined && price > addedPrice
-  const priceDecreased = addedPrice !== undefined && price < addedPrice
+  const priceChanged = addedPrice !== undefined && addedPrice !== price;
+  const priceIncreased = addedPrice !== undefined && price > addedPrice;
+  const priceDecreased = addedPrice !== undefined && price < addedPrice;
 
   return (
     <motion.div
@@ -78,10 +78,15 @@ export function WishlistItem({
             <div className="mt-1 flex items-center gap-2">
               <span className="font-medium">{formatPrice(price)}</span>
               {originalPrice && (
-                <span className="text-sm text-muted-foreground line-through">{formatPrice(originalPrice)}</span>
+                <span className="text-sm text-muted-foreground line-through">
+                  {formatPrice(originalPrice)}
+                </span>
               )}
               {priceChanged && (
-                <Badge variant={priceDecreased ? "success" : "destructive"} className="ml-2">
+                <Badge
+                  variant={priceDecreased ? "success" : "destructive"}
+                  className="ml-2"
+                >
                   {priceDecreased ? "Price dropped" : "Price increased"}
                 </Badge>
               )}
@@ -124,5 +129,5 @@ export function WishlistItem({
         )}
       </div>
     </motion.div>
-  )
+  );
 }

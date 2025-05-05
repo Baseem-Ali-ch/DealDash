@@ -8,7 +8,7 @@ import { SearchBar } from "@/molecules/search-bar";
 import { IconButton } from "@/atoms/icon-button";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks/use-redux";
 import { toggleCart } from "@/lib/store/slices/cartSlice";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 const categories = [
   {

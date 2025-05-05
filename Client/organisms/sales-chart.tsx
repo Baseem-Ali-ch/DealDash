@@ -1,9 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
-import { Calendar, ChevronDown } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
+import { Calendar, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils/utils";
 
 // Sample data
 const dailyData = [
@@ -14,14 +23,14 @@ const dailyData = [
   { date: "Fri", sales: 1890, orders: 11 },
   { date: "Sat", sales: 6390, orders: 38 },
   { date: "Sun", sales: 3490, orders: 21 },
-]
+];
 
 const weeklyData = [
   { date: "Week 1", sales: 24000, orders: 145 },
   { date: "Week 2", sales: 21000, orders: 126 },
   { date: "Week 3", sales: 30000, orders: 180 },
   { date: "Week 4", sales: 18000, orders: 108 },
-]
+];
 
 const monthlyData = [
   { date: "Jan", sales: 85000, orders: 510 },
@@ -36,34 +45,34 @@ const monthlyData = [
   { date: "Oct", sales: 102000, orders: 612 },
   { date: "Nov", sales: 115000, orders: 690 },
   { date: "Dec", sales: 130000, orders: 780 },
-]
+];
 
-type TimeRange = "daily" | "weekly" | "monthly"
+type TimeRange = "daily" | "weekly" | "monthly";
 
 export function SalesChart() {
-  const [timeRange, setTimeRange] = useState<TimeRange>("daily")
-  const [showRangeSelector, setShowRangeSelector] = useState(false)
+  const [timeRange, setTimeRange] = useState<TimeRange>("daily");
+  const [showRangeSelector, setShowRangeSelector] = useState(false);
 
   const getData = () => {
     switch (timeRange) {
       case "daily":
-        return dailyData
+        return dailyData;
       case "weekly":
-        return weeklyData
+        return weeklyData;
       case "monthly":
-        return monthlyData
+        return monthlyData;
       default:
-        return dailyData
+        return dailyData;
     }
-  }
+  };
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
-    }).format(value)
-  }
+    }).format(value);
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
@@ -93,11 +102,11 @@ export function SalesChart() {
                       "block px-4 py-2 text-sm w-full text-left",
                       timeRange === "daily"
                         ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700",
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     )}
                     onClick={() => {
-                      setTimeRange("daily")
-                      setShowRangeSelector(false)
+                      setTimeRange("daily");
+                      setShowRangeSelector(false);
                     }}
                   >
                     Last 7 days
@@ -107,11 +116,11 @@ export function SalesChart() {
                       "block px-4 py-2 text-sm w-full text-left",
                       timeRange === "weekly"
                         ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700",
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     )}
                     onClick={() => {
-                      setTimeRange("weekly")
-                      setShowRangeSelector(false)
+                      setTimeRange("weekly");
+                      setShowRangeSelector(false);
                     }}
                   >
                     Last 4 weeks
@@ -121,11 +130,11 @@ export function SalesChart() {
                       "block px-4 py-2 text-sm w-full text-left",
                       timeRange === "monthly"
                         ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700",
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     )}
                     onClick={() => {
-                      setTimeRange("monthly")
-                      setShowRangeSelector(false)
+                      setTimeRange("monthly");
+                      setShowRangeSelector(false);
                     }}
                   >
                     Last 12 months
@@ -138,11 +147,15 @@ export function SalesChart() {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-primary"></div>
-              <span className="text-xs text-gray-500 dark:text-gray-400">Sales</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Sales
+              </span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 rounded-full bg-blue-400"></div>
-              <span className="text-xs text-gray-500 dark:text-gray-400">Orders</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Orders
+              </span>
             </div>
           </div>
         </div>
@@ -150,9 +163,18 @@ export function SalesChart() {
 
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={getData()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart
+            data={getData()}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="date" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={{ stroke: "#e5e7eb" }} />
+            <XAxis
+              dataKey="date"
+              stroke="#9ca3af"
+              fontSize={12}
+              tickLine={false}
+              axisLine={{ stroke: "#e5e7eb" }}
+            />
             <YAxis
               yAxisId="left"
               stroke="#9ca3af"
@@ -178,9 +200,9 @@ export function SalesChart() {
               }}
               formatter={(value, name) => {
                 if (name === "sales") {
-                  return [formatCurrency(value as number), "Sales"]
+                  return [formatCurrency(value as number), "Sales"];
                 }
-                return [value, "Orders"]
+                return [value, "Orders"];
               }}
               labelStyle={{ fontWeight: "bold", marginBottom: "0.5rem" }}
             />
@@ -207,5 +229,5 @@ export function SalesChart() {
         </ResponsiveContainer>
       </div>
     </div>
-  )
+  );
 }

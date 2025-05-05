@@ -1,8 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Bell, ShoppingBag, AlertTriangle, User, Star, CheckCircle, XCircle } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import {
+  Bell,
+  ShoppingBag,
+  AlertTriangle,
+  User,
+  Star,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
+import { cn } from "@/lib/utils/utils";
 
 // Sample data
 const notifications = [
@@ -54,68 +62,78 @@ const notifications = [
     read: true,
     type: "payment",
   },
-]
+];
 
-type NotificationType = "order" | "inventory" | "customer" | "review" | "payment"
+type NotificationType =
+  | "order"
+  | "inventory"
+  | "customer"
+  | "review"
+  | "payment";
 
 interface NotificationItemProps {
   notification: {
-    id: number
-    title: string
-    message: string
-    time: string
-    read: boolean
-    type: NotificationType
-  }
-  onMarkAsRead: (id: number) => void
+    id: number;
+    title: string;
+    message: string;
+    time: string;
+    read: boolean;
+    type: NotificationType;
+  };
+  onMarkAsRead: (id: number) => void;
 }
 
-const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps) => {
+const NotificationItem = ({
+  notification,
+  onMarkAsRead,
+}: NotificationItemProps) => {
   const getIcon = (type: NotificationType) => {
     switch (type) {
       case "order":
-        return <ShoppingBag className="h-5 w-5" />
+        return <ShoppingBag className="h-5 w-5" />;
       case "inventory":
-        return <AlertTriangle className="h-5 w-5" />
+        return <AlertTriangle className="h-5 w-5" />;
       case "customer":
-        return <User className="h-5 w-5" />
+        return <User className="h-5 w-5" />;
       case "review":
-        return <Star className="h-5 w-5" />
+        return <Star className="h-5 w-5" />;
       case "payment":
         return notification.message.includes("failed") ? (
           <XCircle className="h-5 w-5" />
         ) : (
           <CheckCircle className="h-5 w-5" />
-        )
+        );
     }
-  }
+  };
 
   const getIconColor = (type: NotificationType) => {
     switch (type) {
       case "order":
-        return "bg-blue-500"
+        return "bg-blue-500";
       case "inventory":
-        return "bg-amber-500"
+        return "bg-amber-500";
       case "customer":
-        return "bg-green-500"
+        return "bg-green-500";
       case "review":
-        return "bg-purple-500"
+        return "bg-purple-500";
       case "payment":
-        return notification.message.includes("failed") ? "bg-red-500" : "bg-green-500"
+        return notification.message.includes("failed")
+          ? "bg-red-500"
+          : "bg-green-500";
     }
-  }
+  };
 
   return (
     <div
       className={cn(
         "flex gap-4 p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50",
-        !notification.read && "bg-blue-50 dark:bg-blue-900/20",
+        !notification.read && "bg-blue-50 dark:bg-blue-900/20"
       )}
     >
       <div
         className={cn(
           "w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0",
-          getIconColor(notification.type),
+          getIconColor(notification.type)
         )}
       >
         {getIcon(notification.type)}
@@ -124,9 +142,13 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
       <div className="flex-1">
         <div className="flex justify-between">
           <h4 className="text-sm font-medium">{notification.title}</h4>
-          <span className="text-xs text-gray-500 dark:text-gray-400">{notification.time}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {notification.time}
+          </span>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{notification.message}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+          {notification.message}
+        </p>
 
         {!notification.read && (
           <button
@@ -138,25 +160,29 @@ const NotificationItem = ({ notification, onMarkAsRead }: NotificationItemProps)
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 export function SystemNotifications() {
-  const [notificationsList, setNotificationsList] = useState(notifications)
+  const [notificationsList, setNotificationsList] = useState(notifications);
 
   const handleMarkAsRead = (id: number) => {
     setNotificationsList(
       notificationsList.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification,
-      ),
-    )
-  }
+        notification.id === id ? { ...notification, read: true } : notification
+      )
+    );
+  };
 
   const handleMarkAllAsRead = () => {
-    setNotificationsList(notificationsList.map((notification) => ({ ...notification, read: true })))
-  }
+    setNotificationsList(
+      notificationsList.map((notification) => ({ ...notification, read: true }))
+    );
+  };
 
-  const unreadCount = notificationsList.filter((notification) => !notification.read).length
+  const unreadCount = notificationsList.filter(
+    (notification) => !notification.read
+  ).length;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
@@ -172,7 +198,10 @@ export function SystemNotifications() {
         </div>
 
         {unreadCount > 0 && (
-          <button onClick={handleMarkAllAsRead} className="text-sm text-primary hover:underline">
+          <button
+            onClick={handleMarkAllAsRead}
+            className="text-sm text-primary hover:underline"
+          >
             Mark all as read
           </button>
         )}
@@ -181,12 +210,18 @@ export function SystemNotifications() {
       <div className="max-h-[400px] overflow-y-auto">
         {notificationsList.length > 0 ? (
           notificationsList.map((notification) => (
-            <NotificationItem key={notification.id} notification={notification} onMarkAsRead={handleMarkAsRead} />
+            <NotificationItem
+              key={notification.id}
+              notification={notification}
+              onMarkAsRead={handleMarkAsRead}
+            />
           ))
         ) : (
-          <div className="p-6 text-center text-gray-500 dark:text-gray-400">No notifications to display</div>
+          <div className="p-6 text-center text-gray-500 dark:text-gray-400">
+            No notifications to display
+          </div>
         )}
       </div>
     </div>
-  )
+  );
 }

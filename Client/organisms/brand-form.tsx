@@ -1,23 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/sheet"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ImagePlus, X, AlertCircle } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import Image from "next/image";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ImagePlus, X, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils/utils";
+import { toast } from "sonner";
+import { createBrand, updateBrand } from "@/lib/api/admin/brand";
 
 export function BrandForm({ brand = null, isOpen, onClose, onSave }) {
-  const isEditing = !!brand?.id
+  const isEditing = !!brand?._id;
+  const [isLoading, setIsLoading] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
-    id: brand?.id || null,
     name: brand?.name || "",
     description: brand?.description || "",
     website: brand?.website || "",
@@ -26,43 +34,46 @@ export function BrandForm({ brand = null, isOpen, onClose, onSave }) {
     featured: brand?.featured || false,
     contactEmail: brand?.contactEmail || "",
     contactPhone: brand?.contactPhone || "",
-  })
+  });
 
   // Validation state
-  const [errors, setErrors] = useState({})
-  const [activeTab, setActiveTab] = useState("general")
-  const [isDirty, setIsDirty] = useState(false)
+  const [errors, setErrors] = useState({});
+  const [activeTab, setActiveTab] = useState("general");
+  const [isDirty, setIsDirty] = useState(false);
 
   // Handle input change
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-    setIsDirty(true)
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setIsDirty(true);
 
     // Clear error when field is edited
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }))
+      setErrors((prev) => ({ ...prev, [name]: null }));
     }
-  }
+  };
 
   // Handle switch change
   const handleSwitchChange = (name, checked) => {
     if (name === "status") {
-      setFormData((prev) => ({ ...prev, [name]: checked ? "active" : "inactive" }))
+      setFormData((prev) => ({
+        ...prev,
+        [name]: checked ? "active" : "inactive",
+      }));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: checked }))
+      setFormData((prev) => ({ ...prev, [name]: checked }));
     }
-    setIsDirty(true)
-  }
+    setIsDirty(true);
+  };
 
   // Handle logo upload
   const handleLogoUpload = (e) => {
-    const file = e.target.files[0]
-    if (!file) return
+    const file = e.target.files[0];
+    if (!file) return;
 
     // In a real app, this would upload to a server
     // For demo, we'll create an object URL
-    const logoUrl = URL.createObjectURL(file)
+    const logoUrl = URL.createObjectURL(file);
 
     setFormData((prev) => ({
       ...prev,
@@ -72,71 +83,101 @@ export function BrandForm({ brand = null, isOpen, onClose, onSave }) {
         size: file.size,
         type: file.type,
       },
-    }))
-    setIsDirty(true)
-  }
+    }));
+    setIsDirty(true);
+  };
 
   // Handle logo remove
   const handleRemoveLogo = () => {
     setFormData((prev) => ({
       ...prev,
       logo: null,
-    }))
-    setIsDirty(true)
-  }
+    }));
+    setIsDirty(true);
+  };
 
   // Validate form
   const validateForm = () => {
-    const newErrors = {}
+    const newErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = "Brand name is required"
+      newErrors.name = "Brand name is required";
     }
 
     if (formData.website && !isValidUrl(formData.website)) {
-      newErrors.website = "Please enter a valid URL"
+      newErrors.website = "Please enter a valid URL";
     }
 
     if (formData.contactEmail && !isValidEmail(formData.contactEmail)) {
-      newErrors.contactEmail = "Please enter a valid email address"
+      newErrors.contactEmail = "Please enter a valid email address";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   // Validate URL
   const isValidUrl = (url) => {
     try {
-      new URL(url)
-      return true
+      new URL(url);
+      return true;
     } catch (e) {
-      return false
+      return false;
     }
-  }
+  };
 
   // Validate email
   const isValidEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  }
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   // Handle save
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validateForm()) {
-      // Switch to tab with errors
-      const errorFields = Object.keys(errors)
-
-      if (errorFields.some((field) => ["name", "website", "description"].includes(field))) {
-        setActiveTab("general")
-      } else if (errorFields.some((field) => ["contactEmail", "contactPhone"].includes(field))) {
-        setActiveTab("contact")
+      const errorFields = Object.keys(errors);
+      if (
+        errorFields.some((field) =>
+          ["name", "website", "description"].includes(field)
+        )
+      ) {
+        setActiveTab("general");
+      } else if (
+        errorFields.some((field) =>
+          ["contactEmail", "contactPhone"].includes(field)
+        )
+      ) {
+        setActiveTab("contact");
       }
-
-      return
+      return;
     }
 
-    onSave(formData)
-  }
+    try {
+      setIsLoading(true);
+
+      const response = isEditing
+        ? await updateBrand(brand._id, formData)
+        : await createBrand(formData);
+
+      if (response.success) {
+        toast.success(
+          isEditing
+            ? "Brand updated successfully"
+            : "Brand created successfully"
+        );
+        onSave?.(response.data);
+        onClose();
+      } else {
+        toast.error(response.message || "Failed to save brand");
+        setErrors({ general: response.message });
+      }
+    } catch (error) {
+      console.error("Brand save error:", error);
+      toast.error("An error occurred while saving the brand");
+      setErrors({ general: "An error occurred while saving the brand" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -148,12 +189,14 @@ export function BrandForm({ brand = null, isOpen, onClose, onSave }) {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-2 mb-6">
             <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="contact">Contact</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="space-y-4">
             <div>
-              <Label htmlFor="name" className={cn(errors.name && "text-red-500")}>
+              <Label
+                htmlFor="name"
+                className={cn(errors.name && "text-red-500")}
+              >
                 Brand Name*
               </Label>
               <Input
@@ -172,7 +215,10 @@ export function BrandForm({ brand = null, isOpen, onClose, onSave }) {
             </div>
 
             <div>
-              <Label htmlFor="website" className={cn(errors.website && "text-red-500")}>
+              <Label
+                htmlFor="website"
+                className={cn(errors.website && "text-red-500")}
+              >
                 Website
               </Label>
               <Input
@@ -226,8 +272,15 @@ export function BrandForm({ brand = null, isOpen, onClose, onSave }) {
                 ) : (
                   <label className="flex flex-col items-center justify-center h-40 cursor-pointer border-2 border-dashed rounded-md border-gray-300 hover:border-gray-400 transition-colors">
                     <ImagePlus className="h-10 w-10 text-gray-400 mb-2" />
-                    <span className="text-sm text-gray-500">Upload brand logo</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                    <span className="text-sm text-gray-500">
+                      Upload brand logo
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleLogoUpload}
+                    />
                   </label>
                 )}
               </div>
@@ -237,44 +290,13 @@ export function BrandForm({ brand = null, isOpen, onClose, onSave }) {
               <Switch
                 id="status"
                 checked={formData.status === "active"}
-                onCheckedChange={(checked) => handleSwitchChange("status", checked)}
+                onCheckedChange={(checked) =>
+                  handleSwitchChange("status", checked)
+                }
               />
-              <Label htmlFor="status">{formData.status === "active" ? "Active" : "Inactive"}</Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="featured"
-                checked={formData.featured}
-                onCheckedChange={(checked) => handleSwitchChange("featured", checked)}
-              />
-              <Label htmlFor="featured">Featured on homepage</Label>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="contact" className="space-y-4">
-            <div>
-              <Label htmlFor="contactEmail" className={cn(errors.contactEmail && "text-red-500")}>
-                Contact Email
+              <Label htmlFor="status">
+                {formData.status === "active" ? "Active" : "Inactive"}
               </Label>
-              <Input
-                id="contactEmail"
-                name="contactEmail"
-                value={formData.contactEmail}
-                onChange={handleChange}
-                className={cn(errors.contactEmail && "border-red-500")}
-              />
-              {errors.contactEmail && (
-                <p className="text-red-500 text-sm mt-1 flex items-center">
-                  <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors.contactEmail}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="contactPhone">Contact Phone</Label>
-              <Input id="contactPhone" name="contactPhone" value={formData.contactPhone} onChange={handleChange} />
             </div>
           </TabsContent>
         </Tabs>
@@ -289,5 +311,5 @@ export function BrandForm({ brand = null, isOpen, onClose, onSave }) {
         </SheetFooter>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

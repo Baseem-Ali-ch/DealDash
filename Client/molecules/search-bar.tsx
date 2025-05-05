@@ -1,78 +1,94 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { Search, X } from "lucide-react"
-import { Input } from "@/atoms/input"
-import { IconButton } from "@/atoms/icon-button"
-import { cn } from "@/lib/utils"
+import { useState, useRef, useEffect } from "react";
+import { Search, X } from "lucide-react";
+import { Input } from "@/atoms/input";
+import { IconButton } from "@/atoms/icon-button";
+import { cn } from "@/lib/utils/utils";
 
 interface SearchResult {
-  id: string
-  name: string
-  image: string
+  id: string;
+  name: string;
+  image: string;
 }
 
 export function SearchBar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [query, setQuery] = useState("")
-  const [results, setResults] = useState<SearchResult[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   useEffect(() => {
     if (!query) {
-      setResults([])
-      return
+      setResults([]);
+      return;
     }
 
     const fetchResults = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Mock results
       const mockResults = [
-        { id: "1", name: "Product matching " + query, image: "/placeholder.svg?height=50&width=50" },
-        { id: "2", name: "Another product with " + query, image: "/placeholder.svg?height=50&width=50" },
-        { id: "3", name: "Third item related to " + query, image: "/placeholder.svg?height=50&width=50" },
-      ]
+        {
+          id: "1",
+          name: "Product matching " + query,
+          image: "/placeholder.svg?height=50&width=50",
+        },
+        {
+          id: "2",
+          name: "Another product with " + query,
+          image: "/placeholder.svg?height=50&width=50",
+        },
+        {
+          id: "3",
+          name: "Third item related to " + query,
+          image: "/placeholder.svg?height=50&width=50",
+        },
+      ];
 
-      setResults(mockResults)
-      setIsLoading(false)
-    }
+      setResults(mockResults);
+      setIsLoading(false);
+    };
 
     const debounce = setTimeout(() => {
-      fetchResults()
-    }, 300)
+      fetchResults();
+    }, 300);
 
-    return () => clearTimeout(debounce)
-  }, [query])
+    return () => clearTimeout(debounce);
+  }, [query]);
 
   const handleToggleSearch = () => {
-    setIsOpen(!isOpen)
+    setIsOpen(!isOpen);
     if (!isOpen) {
-      setQuery("")
-      setResults([])
+      setQuery("");
+      setResults([]);
     }
-  }
+  };
 
   return (
     <div className="relative">
       <div className="flex items-center">
-        <IconButton variant="ghost" onClick={handleToggleSearch} aria-label={isOpen ? "Close search" : "Open search"}>
+        <IconButton
+          variant="ghost"
+          onClick={handleToggleSearch}
+          aria-label={isOpen ? "Close search" : "Open search"}
+        >
           {isOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
         </IconButton>
 
         <div
           className={cn(
             "overflow-hidden transition-all duration-300 absolute right-0 top-0 z-10",
-            isOpen ? "w-[300px] opacity-100" : "w-0 opacity-0",
+            isOpen ? "w-[300px] opacity-100" : "w-0 opacity-0"
           )}
         >
           <Input
@@ -98,7 +114,7 @@ export function SearchBar() {
                     className="flex items-center gap-3 p-3 w-full text-left hover:bg-accent transition-colors"
                     onClick={() => {
                       // Handle selection
-                      setIsOpen(false)
+                      setIsOpen(false);
                     }}
                   >
                     <img
@@ -115,5 +131,5 @@ export function SearchBar() {
         </div>
       )}
     </div>
-  )
+  );
 }

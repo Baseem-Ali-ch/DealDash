@@ -1,8 +1,8 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils";
 
 interface SpinnerProps {
-  className?: string
-  size?: "sm" | "md" | "lg"
+  className?: string;
+  size?: "sm" | "md" | "lg";
 }
 
 export function Spinner({ className, size = "md" }: SpinnerProps) {
@@ -15,11 +15,11 @@ export function Spinner({ className, size = "md" }: SpinnerProps) {
           "h-6 w-6": size === "md",
           "h-8 w-8": size === "lg",
         },
-        className,
+        className
       )}
       role="status"
     >
       <span className="sr-only">Loading</span>
     </div>
-  )
+  );
 }

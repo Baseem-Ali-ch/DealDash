@@ -1,48 +1,48 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import type { Order } from "@/lib/data/user-data"
-import { ChevronDown, ChevronUp, Package } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/atoms/button"
-import { OrderStatusProgress } from "@/molecules/order-status-progress"
+import { useState } from "react";
+import type { Order } from "@/lib/data/user-data";
+import { ChevronDown, ChevronUp, Package } from "lucide-react";
+import { cn } from "@/lib/utils/utils";
+import { Button } from "@/atoms/button";
+import { OrderStatusProgress } from "@/molecules/order-status-progress";
 
 interface OrderItemProps {
-  order: Order
+  order: Order;
 }
 
 export const OrderItem = ({ order }: OrderItemProps) => {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(false);
 
   const getStatusColor = (status: Order["status"]) => {
     switch (status) {
       case "processing":
-        return "bg-yellow-500"
+        return "bg-yellow-500";
       case "shipped":
-        return "bg-blue-500"
+        return "bg-blue-500";
       case "delivered":
-        return "bg-green-500"
+        return "bg-green-500";
       case "cancelled":
-        return "bg-red-500"
+        return "bg-red-500";
       default:
-        return "bg-gray-500"
+        return "bg-gray-500";
     }
-  }
+  };
 
   const getStatusText = (status: Order["status"]) => {
     switch (status) {
       case "processing":
-        return "Processing"
+        return "Processing";
       case "shipped":
-        return "Shipped"
+        return "Shipped";
       case "delivered":
-        return "Delivered"
+        return "Delivered";
       case "cancelled":
-        return "Cancelled"
+        return "Cancelled";
       default:
-        return "Unknown"
+        return "Unknown";
     }
-  }
+  };
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-4">
@@ -54,14 +54,16 @@ export const OrderItem = ({ order }: OrderItemProps) => {
           <div
             className={cn(
               "w-10 h-10 rounded-full flex items-center justify-center text-white",
-              getStatusColor(order.status),
+              getStatusColor(order.status)
             )}
           >
             <Package className="h-5 w-5" />
           </div>
           <div>
             <h4 className="font-medium">{order.orderNumber}</h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{order.date}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {order.date}
+            </p>
           </div>
         </div>
 
@@ -71,15 +73,31 @@ export const OrderItem = ({ order }: OrderItemProps) => {
             <span
               className={cn(
                 "text-xs px-2 py-1 rounded-full ml-2",
-                `bg-${order.status === "delivered" ? "green" : order.status === "cancelled" ? "red" : "blue"}-100`,
-                `text-${order.status === "delivered" ? "green" : order.status === "cancelled" ? "red" : "blue"}-800`,
+                `bg-${
+                  order.status === "delivered"
+                    ? "green"
+                    : order.status === "cancelled"
+                    ? "red"
+                    : "blue"
+                }-100`,
+                `text-${
+                  order.status === "delivered"
+                    ? "green"
+                    : order.status === "cancelled"
+                    ? "red"
+                    : "blue"
+                }-800`
               )}
             >
               {getStatusText(order.status)}
             </span>
           </div>
           <div className="text-gray-400">
-            {expanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+            {expanded ? (
+              <ChevronUp className="h-5 w-5" />
+            ) : (
+              <ChevronDown className="h-5 w-5" />
+            )}
           </div>
         </div>
       </div>
@@ -92,10 +110,10 @@ export const OrderItem = ({ order }: OrderItemProps) => {
                 order.status === "processing"
                   ? "processing"
                   : order.status === "shipped"
-                    ? "shipped"
-                    : order.status === "delivered"
-                      ? "delivered"
-                      : "pending"
+                  ? "shipped"
+                  : order.status === "delivered"
+                  ? "delivered"
+                  : "pending"
               }
               className="mb-6"
             />
@@ -127,14 +145,21 @@ export const OrderItem = ({ order }: OrderItemProps) => {
               <div>
                 <h5 className="font-medium mb-3">Tracking Information</h5>
                 <p className="text-sm mb-1">
-                  <span className="text-gray-500 dark:text-gray-400">Carrier:</span> {order.tracking.carrier}
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Carrier:
+                  </span>{" "}
+                  {order.tracking.carrier}
                 </p>
                 <p className="text-sm mb-1">
-                  <span className="text-gray-500 dark:text-gray-400">Tracking Number:</span>{" "}
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Tracking Number:
+                  </span>{" "}
                   {order.tracking.trackingNumber}
                 </p>
                 <p className="text-sm mb-3">
-                  <span className="text-gray-500 dark:text-gray-400">Estimated Delivery:</span>{" "}
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Estimated Delivery:
+                  </span>{" "}
                   {order.tracking.estimatedDelivery}
                 </p>
 
@@ -144,12 +169,16 @@ export const OrderItem = ({ order }: OrderItemProps) => {
                       <div
                         className={cn(
                           "w-5 h-5 rounded-full mt-0.5",
-                          event.completed ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600",
+                          event.completed
+                            ? "bg-green-500"
+                            : "bg-gray-300 dark:bg-gray-600"
                         )}
                       ></div>
                       <div>
                         <p className="font-medium">{event.status}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{event.date || "Pending"}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {event.date || "Pending"}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -165,5 +194,5 @@ export const OrderItem = ({ order }: OrderItemProps) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};

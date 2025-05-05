@@ -1,10 +1,17 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,135 +19,175 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Pagination } from "@/molecules/pagination"
-import { CustomerStatusBadge } from "@/molecules/customer-status-badge"
-import { CustomerTag } from "@/molecules/customer-tag"
-import { DateRangePicker } from "@/molecules/date-range-picker"
-import { Search, MoreHorizontal, ArrowUpDown, Download, Mail, Eye, UserX, UserCheck, Filter } from "lucide-react"
-import type { DateRange } from "react-day-picker"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/dropdown-menu";
+import { Pagination } from "@/molecules/pagination";
+import { CustomerStatusBadge } from "@/molecules/customer-status-badge";
+import { CustomerTag } from "@/molecules/customer-tag";
+import { DateRangePicker } from "@/molecules/date-range-picker";
+import {
+  Search,
+  MoreHorizontal,
+  ArrowUpDown,
+  Download,
+  Mail,
+  Eye,
+  UserX,
+  UserCheck,
+  Filter,
+} from "lucide-react";
+import type { DateRange } from "react-day-picker";
+import { cn } from "@/lib/utils/utils";
 
-type CustomerStatus = "active" | "inactive" | "banned"
+type CustomerStatus = "active" | "inactive" | "banned";
 
 interface Customer {
-  id: string
-  name: string
-  email: string
-  phone: string
-  registrationDate: string
-  status: CustomerStatus
-  ordersCount: number
-  totalSpent: number
-  lastOrderDate: string | null
-  tags: string[]
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  registrationDate: string;
+  status: CustomerStatus;
+  ordersCount: number;
+  totalSpent: number;
+  lastOrderDate: string | null;
+  tags: string[];
 }
 
 interface CustomerTableProps {
-  customers: Customer[]
-  onStatusChange: (customerId: string, newStatus: CustomerStatus) => Promise<void>
+  customers: Customer[];
+  onStatusChange: (
+    customerId: string,
+    newStatus: CustomerStatus
+  ) => Promise<void>;
 }
 
-export function CustomerTable({ customers: initialCustomers, onStatusChange }: CustomerTableProps) {
-  const [customers, setCustomers] = useState<Customer[]>(initialCustomers)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [perPage, setPerPage] = useState(10)
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
-  const [showFilters, setShowFilters] = useState(false)
+export function CustomerTable({
+  customers: initialCustomers,
+  onStatusChange,
+}: CustomerTableProps) {
+  const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     minOrders: "",
     maxOrders: "",
     minSpent: "",
     maxSpent: "",
     status: "all" as "all" | CustomerStatus,
-  })
+  });
 
   // Apply filters and search
   const filteredCustomers = customers.filter((customer) => {
     // Search filter
     if (searchQuery) {
-      const query = searchQuery.toLowerCase()
+      const query = searchQuery.toLowerCase();
       if (
         !customer.name.toLowerCase().includes(query) &&
         !customer.email.toLowerCase().includes(query) &&
         !customer.phone.includes(query)
       ) {
-        return false
+        return false;
       }
     }
 
     // Date range filter
     if (dateRange?.from) {
-      const customerDate = new Date(customer.registrationDate)
+      const customerDate = new Date(customer.registrationDate);
       if (customerDate < dateRange.from) {
-        return false
+        return false;
       }
       if (dateRange.to && customerDate > dateRange.to) {
-        return false
+        return false;
       }
     }
 
     // Order count filter
-    if (filters.minOrders && customer.ordersCount < Number.parseInt(filters.minOrders)) {
-      return false
+    if (
+      filters.minOrders &&
+      customer.ordersCount < Number.parseInt(filters.minOrders)
+    ) {
+      return false;
     }
-    if (filters.maxOrders && customer.ordersCount > Number.parseInt(filters.maxOrders)) {
-      return false
+    if (
+      filters.maxOrders &&
+      customer.ordersCount > Number.parseInt(filters.maxOrders)
+    ) {
+      return false;
     }
 
     // Total spent filter
-    if (filters.minSpent && customer.totalSpent < Number.parseFloat(filters.minSpent)) {
-      return false
+    if (
+      filters.minSpent &&
+      customer.totalSpent < Number.parseFloat(filters.minSpent)
+    ) {
+      return false;
     }
-    if (filters.maxSpent && customer.totalSpent > Number.parseFloat(filters.maxSpent)) {
-      return false
+    if (
+      filters.maxSpent &&
+      customer.totalSpent > Number.parseFloat(filters.maxSpent)
+    ) {
+      return false;
     }
 
     // Status filter
     if (filters.status !== "all" && customer.status !== filters.status) {
-      return false
+      return false;
     }
 
-    return true
-  })
+    return true;
+  });
 
   // Pagination
-  const totalItems = filteredCustomers.length
-  const totalPages = Math.ceil(totalItems / perPage)
-  const paginatedCustomers = filteredCustomers.slice((currentPage - 1) * perPage, currentPage * perPage)
+  const totalItems = filteredCustomers.length;
+  const totalPages = Math.ceil(totalItems / perPage);
+  const paginatedCustomers = filteredCustomers.slice(
+    (currentPage - 1) * perPage,
+    currentPage * perPage
+  );
 
   // Handle status change
-  const handleStatusChange = async (customerId: string, newStatus: CustomerStatus) => {
+  const handleStatusChange = async (
+    customerId: string,
+    newStatus: CustomerStatus
+  ) => {
     try {
-      await onStatusChange(customerId, newStatus)
+      await onStatusChange(customerId, newStatus);
       setCustomers(
-        customers.map((customer) => (customer.id === customerId ? { ...customer, status: newStatus } : customer)),
-      )
+        customers.map((customer) =>
+          customer.id === customerId
+            ? { ...customer, status: newStatus }
+            : customer
+        )
+      );
     } catch (error) {
-      console.error("Failed to change customer status:", error)
+      console.error("Failed to change customer status:", error);
     }
-  }
+  };
 
   // Reset filters
   const resetFilters = () => {
-    setSearchQuery("")
-    setDateRange(undefined)
+    setSearchQuery("");
+    setDateRange(undefined);
     setFilters({
       minOrders: "",
       maxOrders: "",
       minSpent: "",
       maxSpent: "",
       status: "all",
-    })
-  }
+    });
+  };
 
   // Export customers
   const exportCustomers = () => {
     // In a real app, this would generate a CSV or Excel file
-    console.log("Exporting customers:", filteredCustomers)
-    alert("Customer data export initiated. The file will be available for download shortly.")
-  }
+    console.log("Exporting customers:", filteredCustomers);
+    alert(
+      "Customer data export initiated. The file will be available for download shortly."
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -175,8 +222,13 @@ export function CustomerTable({ customers: initialCustomers, onStatusChange }: C
       {showFilters && (
         <div className="bg-muted/40 p-4 rounded-md grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="text-sm font-medium mb-1 block">Registration Date</label>
-            <DateRangePicker dateRange={dateRange} onDateRangeChange={setDateRange} />
+            <label className="text-sm font-medium mb-1 block">
+              Registration Date
+            </label>
+            <DateRangePicker
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+            />
           </div>
 
           <div className="space-y-2">
@@ -186,14 +238,18 @@ export function CustomerTable({ customers: initialCustomers, onStatusChange }: C
                 type="number"
                 placeholder="Min"
                 value={filters.minOrders}
-                onChange={(e) => setFilters({ ...filters, minOrders: e.target.value })}
+                onChange={(e) =>
+                  setFilters({ ...filters, minOrders: e.target.value })
+                }
                 className="w-full"
               />
               <Input
                 type="number"
                 placeholder="Max"
                 value={filters.maxOrders}
-                onChange={(e) => setFilters({ ...filters, maxOrders: e.target.value })}
+                onChange={(e) =>
+                  setFilters({ ...filters, maxOrders: e.target.value })
+                }
                 className="w-full"
               />
             </div>
@@ -206,14 +262,18 @@ export function CustomerTable({ customers: initialCustomers, onStatusChange }: C
                 type="number"
                 placeholder="Min"
                 value={filters.minSpent}
-                onChange={(e) => setFilters({ ...filters, minSpent: e.target.value })}
+                onChange={(e) =>
+                  setFilters({ ...filters, minSpent: e.target.value })
+                }
                 className="w-full"
               />
               <Input
                 type="number"
                 placeholder="Max"
                 value={filters.maxSpent}
-                onChange={(e) => setFilters({ ...filters, maxSpent: e.target.value })}
+                onChange={(e) =>
+                  setFilters({ ...filters, maxSpent: e.target.value })
+                }
                 className="w-full"
               />
             </div>
@@ -223,7 +283,9 @@ export function CustomerTable({ customers: initialCustomers, onStatusChange }: C
             <label className="text-sm font-medium block">Status</label>
             <select
               value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value as any })}
+              onChange={(e) =>
+                setFilters({ ...filters, status: e.target.value as any })
+              }
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <option value="all">All Statuses</option>
@@ -232,7 +294,12 @@ export function CustomerTable({ customers: initialCustomers, onStatusChange }: C
               <option value="banned">Banned</option>
             </select>
 
-            <Button variant="outline" size="sm" onClick={resetFilters} className="w-full mt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetFilters}
+              className="w-full mt-2"
+            >
               Reset Filters
             </Button>
           </div>
@@ -280,7 +347,9 @@ export function CustomerTable({ customers: initialCustomers, onStatusChange }: C
                   <TableCell>
                     <div>
                       <div className="font-medium">{customer.name}</div>
-                      <div className="text-sm text-muted-foreground">{customer.email}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {customer.email}
+                      </div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -289,7 +358,9 @@ export function CustomerTable({ customers: initialCustomers, onStatusChange }: C
                   <TableCell>{customer.ordersCount}</TableCell>
                   <TableCell>${customer.totalSpent.toFixed(2)}</TableCell>
                   <TableCell>
-                    {customer.lastOrderDate ? new Date(customer.lastOrderDate).toLocaleDateString() : "Never"}
+                    {customer.lastOrderDate
+                      ? new Date(customer.lastOrderDate).toLocaleDateString()
+                      : "Never"}
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
@@ -325,12 +396,20 @@ export function CustomerTable({ customers: initialCustomers, onStatusChange }: C
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         {customer.status === "active" ? (
-                          <DropdownMenuItem onClick={() => handleStatusChange(customer.id, "inactive")}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleStatusChange(customer.id, "inactive")
+                            }
+                          >
                             <UserX className="h-4 w-4 mr-2" />
                             Deactivate
                           </DropdownMenuItem>
                         ) : (
-                          <DropdownMenuItem onClick={() => handleStatusChange(customer.id, "active")}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleStatusChange(customer.id, "active")
+                            }
+                          >
                             <UserCheck className="h-4 w-4 mr-2" />
                             Activate
                           </DropdownMenuItem>
@@ -360,5 +439,5 @@ export function CustomerTable({ customers: initialCustomers, onStatusChange }: C
         totalItems={totalItems}
       />
     </div>
-  )
+  );
 }

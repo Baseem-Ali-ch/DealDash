@@ -1,22 +1,29 @@
-import { Star } from "lucide-react"
-import { Button } from "@/atoms/button"
-import { cn } from "@/lib/utils"
+import { Star } from "lucide-react";
+import { Button } from "@/atoms/button";
+import { cn } from "@/lib/utils/utils";
 
 interface ProductReviewCardProps {
-  user: string
-  rating: number
-  title: string
-  comment: string
-  date: string
-  helpful: number
+  user: string;
+  rating: number;
+  title: string;
+  comment: string;
+  date: string;
+  helpful: number;
 }
 
-export function ProductReviewCard({ user, rating, title, comment, date, helpful }: ProductReviewCardProps) {
+export function ProductReviewCard({
+  user,
+  rating,
+  title,
+  comment,
+  date,
+  helpful,
+}: ProductReviewCardProps) {
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
-  })
+  });
 
   return (
     <div className="border-b pb-6">
@@ -28,7 +35,9 @@ export function ProductReviewCard({ user, rating, title, comment, date, helpful 
                 key={i}
                 className={cn(
                   "h-4 w-4",
-                  i < rating ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200",
+                  i < rating
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "fill-gray-200 text-gray-200"
                 )}
               />
             ))}
@@ -42,11 +51,13 @@ export function ProductReviewCard({ user, rating, title, comment, date, helpful 
       </p>
       <p className="mb-4 text-sm">{comment}</p>
       <div className="flex items-center text-sm">
-        <span className="mr-2 text-muted-foreground">{helpful} people found this helpful</span>
+        <span className="mr-2 text-muted-foreground">
+          {helpful} people found this helpful
+        </span>
         <Button variant="outline" size="sm">
           Helpful
         </Button>
       </div>
     </div>
-  )
+  );
 }

@@ -1,27 +1,32 @@
-"use client"
+"use client";
 
-import type React from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import type React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils/utils";
 
 interface MobileNavItemProps {
-  href: string
-  icon: React.ReactNode
-  label: string
-  badge?: number
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+  badge?: number;
 }
 
-export const MobileNavItem = ({ href, icon, label, badge }: MobileNavItemProps) => {
-  const pathname = usePathname()
-  const isActive = pathname === href
+export const MobileNavItem = ({
+  href,
+  icon,
+  label,
+  badge,
+}: MobileNavItemProps) => {
+  const pathname = usePathname();
+  const isActive = pathname === href;
 
   return (
     <Link
       href={href}
       className={cn(
         "flex flex-col items-center justify-center gap-1 p-2",
-        isActive ? "text-primary" : "text-gray-500 dark:text-gray-400",
+        isActive ? "text-primary" : "text-gray-500 dark:text-gray-400"
       )}
     >
       <div className="relative">
@@ -34,5 +39,5 @@ export const MobileNavItem = ({ href, icon, label, badge }: MobileNavItemProps) 
       </div>
       <span className="text-xs font-medium">{label}</span>
     </Link>
-  )
-}
+  );
+};

@@ -1,53 +1,58 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { ProductCard } from "@/molecules/product-card"
-import { Pagination } from "@/molecules/pagination"
-import { useAppSelector } from "@/lib/hooks/use-redux"
-import { getFilteredProducts } from "@/lib/data/products"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from "react";
+import { ProductCard } from "@/molecules/product-card";
+import { Pagination } from "@/molecules/pagination";
+import { useAppSelector } from "@/lib/hooks/use-redux";
+import { getFilteredProducts } from "@/lib/data/products";
+import { cn } from "@/lib/utils/utils";
 
 interface ProductGridProps {
-  className?: string
+  className?: string;
 }
 
 export function ProductGrid({ className }: ProductGridProps) {
-  const filters = useAppSelector((state) => state.filter)
-  const [products, setProducts] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [totalPages, setTotalPages] = useState(1)
+  const filters = useAppSelector((state) => state.filter);
+  const [products, setProducts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
 
       // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const filteredProducts = getFilteredProducts(filters)
+      const filteredProducts = getFilteredProducts(filters);
 
       // Calculate pagination
-      const totalProducts = filteredProducts.length
-      const totalPages = Math.ceil(totalProducts / filters.perPage)
+      const totalProducts = filteredProducts.length;
+      const totalPages = Math.ceil(totalProducts / filters.perPage);
 
       // Get current page products
-      const startIndex = (filters.page - 1) * filters.perPage
-      const endIndex = startIndex + filters.perPage
-      const paginatedProducts = filteredProducts.slice(startIndex, endIndex)
+      const startIndex = (filters.page - 1) * filters.perPage;
+      const endIndex = startIndex + filters.perPage;
+      const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
-      setProducts(paginatedProducts)
-      setTotalPages(totalPages)
-      setIsLoading(false)
-    }
+      setProducts(paginatedProducts);
+      setTotalPages(totalPages);
+      setIsLoading(false);
+    };
 
-    fetchProducts()
-  }, [filters])
+    fetchProducts();
+  }, [filters]);
 
   if (isLoading) {
     return (
-      <div className={cn("grid gap-4 sm:grid-cols-2 md:grid-cols-3", className)}>
+      <div
+        className={cn("grid gap-4 sm:grid-cols-2 md:grid-cols-3", className)}
+      >
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="animate-pulse rounded-lg border bg-background">
+          <div
+            key={i}
+            className="animate-pulse rounded-lg border bg-background"
+          >
             <div className="aspect-square rounded-t-lg bg-gray-200 dark:bg-gray-700" />
             <div className="p-4 space-y-3">
               <div className="h-4 rounded bg-gray-200 dark:bg-gray-700" />
@@ -58,7 +63,7 @@ export function ProductGrid({ className }: ProductGridProps) {
           </div>
         ))}
       </div>
-    )
+    );
   }
 
   if (products.length === 0) {
@@ -66,18 +71,21 @@ export function ProductGrid({ className }: ProductGridProps) {
       <div className="flex h-96 flex-col items-center justify-center rounded-lg border bg-background p-8 text-center">
         <h3 className="mb-2 text-xl font-medium">No products found</h3>
         <p className="mb-6 text-muted-foreground">
-          Try adjusting your filters or search criteria to find what you're looking for.
+          Try adjusting your filters or search criteria to find what you're
+          looking for.
         </p>
       </div>
-    )
+    );
   }
 
   return (
     <div className="space-y-8">
       <div
         className={cn(
-          filters.view === "grid" ? "grid gap-4 sm:grid-cols-2 md:grid-cols-3" : "flex flex-col space-y-4",
-          className,
+          filters.view === "grid"
+            ? "grid gap-4 sm:grid-cols-2 md:grid-cols-3"
+            : "flex flex-col space-y-4",
+          className
         )}
       >
         {products.map((product) => (
@@ -105,11 +113,11 @@ export function ProductGrid({ className }: ProductGridProps) {
           totalPages={totalPages}
           onPageChange={(page) => {
             // Scroll to top when changing pages
-            window.scrollTo({ top: 0, behavior: "smooth" })
+            window.scrollTo({ top: 0, behavior: "smooth" });
             // Page change is handled by the filter slice
           }}
         />
       )}
     </div>
-  )
+  );
 }

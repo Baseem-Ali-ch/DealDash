@@ -8,7 +8,7 @@ import { IconButton } from "@/atoms/icon-button";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/use-redux";
 import { addToCart } from "@/lib/store/slices/cartSlice";
 import { toggleWishlist } from "@/lib/store/slices/wishlistSlice";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface Product {
   id: string;

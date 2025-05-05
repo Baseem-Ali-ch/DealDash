@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/atoms/button";
 import { ProductCard } from "@/molecules/product-card";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface ProductCarouselProps {
   title: string;

@@ -5,7 +5,7 @@ import { Trash2, Heart, AlertTriangle, Minus, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { Button } from "@/atoms/button";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils/utils";
 import { useAppDispatch } from "@/lib/hooks/use-redux";
 import { removeFromCart, updateQuantity } from "@/lib/store/slices/cartSlice";
 import { addToWishlist } from "@/lib/store/slices/wishlistSlice";

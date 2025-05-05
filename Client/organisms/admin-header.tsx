@@ -16,7 +16,7 @@ import {
   Package,
   BarChart3,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { NotificationBadge } from "@/atoms/notification-badge";
 import type { RootState } from "@/lib/store/store";
 import { ThemeToggle } from "@/molecules/theme-toggle";

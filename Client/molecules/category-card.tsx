@@ -1,18 +1,30 @@
-import Image from "next/image"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
+import Image from "next/image";
+import Link from "next/link";
+import { cn } from "@/lib/utils/utils";
 
 interface CategoryCardProps {
-  name: string
-  image: string
-  slug: string
-  count: number
-  className?: string
+  name: string;
+  image: string;
+  slug: string;
+  count: number;
+  className?: string;
 }
 
-export function CategoryCard({ name, image, slug, count, className }: CategoryCardProps) {
+export function CategoryCard({
+  name,
+  image,
+  slug,
+  count,
+  className,
+}: CategoryCardProps) {
   return (
-    <Link href={`/category/${slug}`} className={cn("group relative block overflow-hidden rounded-lg", className)}>
+    <Link
+      href={`/category/${slug}`}
+      className={cn(
+        "group relative block overflow-hidden rounded-lg",
+        className
+      )}
+    >
       <div className="relative aspect-square md:aspect-[4/3] overflow-hidden">
         <Image
           src={image || "/placeholder.svg"}
@@ -28,5 +40,5 @@ export function CategoryCard({ name, image, slug, count, className }: CategoryCa
         <p className="text-sm opacity-90">{count} products</p>
       </div>
     </Link>
-  )
+  );
 }

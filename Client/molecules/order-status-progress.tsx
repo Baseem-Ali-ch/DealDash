@@ -1,21 +1,30 @@
-import { cn } from "@/lib/utils"
-import { Check, Clock, Package, Truck, Home } from "lucide-react"
+import { cn } from "@/lib/utils/utils";
+import { Check, Clock, Package, Truck, Home } from "lucide-react";
 
-type OrderStatus = "pending" | "processing" | "shipped" | "out_for_delivery" | "delivered" | "cancelled"
+type OrderStatus =
+  | "pending"
+  | "processing"
+  | "shipped"
+  | "out_for_delivery"
+  | "delivered"
+  | "cancelled";
 
 interface OrderStatusProgressProps {
-  status: OrderStatus
-  className?: string
+  status: OrderStatus;
+  className?: string;
 }
 
-export const OrderStatusProgress = ({ status, className }: OrderStatusProgressProps) => {
+export const OrderStatusProgress = ({
+  status,
+  className,
+}: OrderStatusProgressProps) => {
   const steps = [
     { id: "pending", label: "Pending", icon: Clock },
     { id: "processing", label: "Processing", icon: Package },
     { id: "shipped", label: "Shipped", icon: Truck },
     { id: "out_for_delivery", label: "Out for Delivery", icon: Truck },
     { id: "delivered", label: "Delivered", icon: Home },
-  ]
+  ];
 
   // Map the status to a numeric value for progress calculation
   const statusValues: Record<OrderStatus, number> = {
@@ -25,9 +34,9 @@ export const OrderStatusProgress = ({ status, className }: OrderStatusProgressPr
     out_for_delivery: 3,
     delivered: 4,
     cancelled: -1,
-  }
+  };
 
-  const currentStep = statusValues[status]
+  const currentStep = statusValues[status];
 
   // Don't show progress for cancelled orders
   if (status === "cancelled") {
@@ -37,7 +46,7 @@ export const OrderStatusProgress = ({ status, className }: OrderStatusProgressPr
           This order has been cancelled
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -53,8 +62,8 @@ export const OrderStatusProgress = ({ status, className }: OrderStatusProgressPr
         {/* Steps */}
         <div className="relative flex justify-between">
           {steps.map((step, index) => {
-            const isCompleted = index <= currentStep
-            const isCurrent = index === currentStep
+            const isCompleted = index <= currentStep;
+            const isCurrent = index === currentStep;
 
             return (
               <div key={step.id} className="flex flex-col items-center">
@@ -64,24 +73,30 @@ export const OrderStatusProgress = ({ status, className }: OrderStatusProgressPr
                     isCompleted
                       ? "bg-primary text-white"
                       : "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400",
-                    isCurrent && "ring-4 ring-primary/20",
+                    isCurrent && "ring-4 ring-primary/20"
                   )}
                 >
-                  {isCompleted ? <Check className="w-5 h-5" /> : <step.icon className="w-5 h-5" />}
+                  {isCompleted ? (
+                    <Check className="w-5 h-5" />
+                  ) : (
+                    <step.icon className="w-5 h-5" />
+                  )}
                 </div>
                 <span
                   className={cn(
                     "text-xs mt-2 font-medium",
-                    isCompleted ? "text-primary" : "text-gray-500 dark:text-gray-400",
+                    isCompleted
+                      ? "text-primary"
+                      : "text-gray-500 dark:text-gray-400"
                   )}
                 >
                   {step.label}
                 </span>
               </div>
-            )
+            );
           })}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

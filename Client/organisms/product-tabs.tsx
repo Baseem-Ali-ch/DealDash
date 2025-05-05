@@ -1,112 +1,116 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Star } from "lucide-react"
-import { Button } from "@/atoms/button"
-import { ProductReviewCard } from "@/molecules/product-review-card"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { Star } from "lucide-react";
+import { Button } from "@/atoms/button";
+import { ProductReviewCard } from "@/molecules/product-review-card";
+import { cn } from "@/lib/utils/utils";
 
 interface ProductTabsProps {
   product: {
-    description: string
-    features: string[]
-    specifications: Record<string, string>
-  }
+    description: string;
+    features: string[];
+    specifications: Record<string, string>;
+  };
   reviews: Array<{
-    id: string
-    user: string
-    rating: number
-    title: string
-    comment: string
-    date: string
-    helpful: number
-  }>
+    id: string;
+    user: string;
+    rating: number;
+    title: string;
+    comment: string;
+    date: string;
+    helpful: number;
+  }>;
 }
 
 interface ReviewFormState {
-  rating: number
-  title: string
-  comment: string
-  name: string
-  email: string
+  rating: number;
+  title: string;
+  comment: string;
+  name: string;
+  email: string;
 }
 
 export function ProductTabs({ product, reviews }: ProductTabsProps) {
-  const [activeTab, setActiveTab] = useState("description")
-  const [reviewSort, setReviewSort] = useState("newest")
-  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [activeTab, setActiveTab] = useState("description");
+  const [reviewSort, setReviewSort] = useState("newest");
+  const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewFormState, setReviewFormState] = useState<ReviewFormState>({
     rating: 5,
     title: "",
     comment: "",
     name: "",
     email: "",
-  })
-  const [reviewSubmitted, setReviewSubmitted] = useState(false)
+  });
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   const sortedReviews = [...reviews].sort((a, b) => {
     switch (reviewSort) {
       case "newest":
-        return new Date(b.date).getTime() - new Date(a.date).getTime()
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
       case "oldest":
-        return new Date(a.date).getTime() - new Date(b.date).getTime()
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
       case "highest":
-        return b.rating - a.rating
+        return b.rating - a.rating;
       case "lowest":
-        return a.rating - b.rating
+        return a.rating - b.rating;
       case "most-helpful":
-        return b.helpful - a.helpful
+        return b.helpful - a.helpful;
       default:
-        return 0
+        return 0;
     }
-  })
+  });
 
-  const averageRating = reviews.reduce((total, review) => total + review.rating, 0) / reviews.length
+  const averageRating =
+    reviews.reduce((total, review) => total + review.rating, 0) /
+    reviews.length;
 
   const ratingCounts = reviews.reduce(
     (counts, review) => {
-      counts[review.rating - 1]++
-      return counts
+      counts[review.rating - 1]++;
+      return counts;
     },
-    [0, 0, 0, 0, 0],
-  )
+    [0, 0, 0, 0, 0]
+  );
 
-  const handleReviewFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+  const handleReviewFormChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
     setReviewFormState((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleRatingChange = (rating: number) => {
     setReviewFormState((prev) => ({
       ...prev,
       rating,
-    }))
-  }
+    }));
+  };
 
   const handleReviewSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // In a real app, this would submit to an API
-    console.log("Review submitted:", reviewFormState)
-    setReviewSubmitted(true)
-    setShowReviewForm(false)
+    console.log("Review submitted:", reviewFormState);
+    setReviewSubmitted(true);
+    setShowReviewForm(false);
 
     // Reset form after submission
     setTimeout(() => {
-      setReviewSubmitted(false)
+      setReviewSubmitted(false);
       setReviewFormState({
         rating: 5,
         title: "",
         comment: "",
         name: "",
         email: "",
-      })
-    }, 3000)
-  }
+      });
+    }, 3000);
+  };
 
   return (
     <div>
@@ -117,7 +121,7 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
               "border-b-2 px-1 pb-4 text-sm font-medium",
               activeTab === "description"
                 ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground",
+                : "border-transparent text-muted-foreground hover:text-foreground"
             )}
             onClick={() => setActiveTab("description")}
           >
@@ -128,7 +132,7 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
               "border-b-2 px-1 pb-4 text-sm font-medium",
               activeTab === "specifications"
                 ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground",
+                : "border-transparent text-muted-foreground hover:text-foreground"
             )}
             onClick={() => setActiveTab("specifications")}
           >
@@ -139,7 +143,7 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
               "border-b-2 px-1 pb-4 text-sm font-medium",
               activeTab === "reviews"
                 ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground",
+                : "border-transparent text-muted-foreground hover:text-foreground"
             )}
             onClick={() => setActiveTab("reviews")}
           >
@@ -171,8 +175,12 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
               <tbody className="divide-y">
                 {Object.entries(product.specifications).map(([key, value]) => (
                   <tr key={key}>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm font-medium">{key}</td>
-                    <td className="px-4 py-3 text-sm text-muted-foreground">{value}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-sm font-medium">
+                      {key}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
+                      {value}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -194,14 +202,18 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
                           "h-5 w-5",
                           i < Math.floor(averageRating)
                             ? "fill-yellow-400 text-yellow-400"
-                            : "fill-gray-200 text-gray-200",
+                            : "fill-gray-200 text-gray-200"
                         )}
                       />
                     ))}
                   </div>
-                  <span className="text-lg font-medium">{averageRating.toFixed(1)} out of 5</span>
+                  <span className="text-lg font-medium">
+                    {averageRating.toFixed(1)} out of 5
+                  </span>
                 </div>
-                <p className="mb-4 text-sm text-muted-foreground">Based on {reviews.length} reviews</p>
+                <p className="mb-4 text-sm text-muted-foreground">
+                  Based on {reviews.length} reviews
+                </p>
                 <div className="space-y-2">
                   {[5, 4, 3, 2, 1].map((rating) => (
                     <div key={rating} className="flex items-center">
@@ -211,11 +223,15 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
                         <div
                           className="h-full rounded-full bg-yellow-400"
                           style={{
-                            width: `${(ratingCounts[rating - 1] / reviews.length) * 100}%`,
+                            width: `${
+                              (ratingCounts[rating - 1] / reviews.length) * 100
+                            }%`,
                           }}
                         />
                       </div>
-                      <span className="ml-2 text-xs text-muted-foreground">{ratingCounts[rating - 1]}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        {ratingCounts[rating - 1]}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -228,27 +244,40 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
                     {showReviewForm ? "Cancel" : "Write a Review"}
                   </Button>
                 </div>
-                <p className="text-sm text-muted-foreground">Share your thoughts with other customers</p>
+                <p className="text-sm text-muted-foreground">
+                  Share your thoughts with other customers
+                </p>
 
                 {reviewSubmitted && (
                   <div className="mt-4 p-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 rounded-md">
-                    Thank you for your review! It has been submitted successfully.
+                    Thank you for your review! It has been submitted
+                    successfully.
                   </div>
                 )}
 
                 {showReviewForm && (
-                  <form onSubmit={handleReviewSubmit} className="mt-6 space-y-4 border rounded-md p-4">
+                  <form
+                    onSubmit={handleReviewSubmit}
+                    className="mt-6 space-y-4 border rounded-md p-4"
+                  >
                     <div>
-                      <label className="block text-sm font-medium mb-1">Your Rating</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Your Rating
+                      </label>
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map((star) => (
-                          <button key={star} type="button" onClick={() => handleRatingChange(star)} className="p-1">
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => handleRatingChange(star)}
+                            className="p-1"
+                          >
                             <Star
                               className={cn(
                                 "h-6 w-6",
                                 star <= reviewFormState.rating
                                   ? "fill-yellow-400 text-yellow-400"
-                                  : "fill-gray-200 text-gray-200",
+                                  : "fill-gray-200 text-gray-200"
                               )}
                             />
                           </button>
@@ -257,7 +286,10 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
                     </div>
 
                     <div>
-                      <label htmlFor="review-title" className="block text-sm font-medium mb-1">
+                      <label
+                        htmlFor="review-title"
+                        className="block text-sm font-medium mb-1"
+                      >
                         Review Title
                       </label>
                       <input
@@ -273,7 +305,10 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
                     </div>
 
                     <div>
-                      <label htmlFor="review-comment" className="block text-sm font-medium mb-1">
+                      <label
+                        htmlFor="review-comment"
+                        className="block text-sm font-medium mb-1"
+                      >
                         Review
                       </label>
                       <textarea
@@ -290,7 +325,10 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="review-name" className="block text-sm font-medium mb-1">
+                        <label
+                          htmlFor="review-name"
+                          className="block text-sm font-medium mb-1"
+                        >
                           Your Name
                         </label>
                         <input
@@ -306,7 +344,10 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
                       </div>
 
                       <div>
-                        <label htmlFor="review-email" className="block text-sm font-medium mb-1">
+                        <label
+                          htmlFor="review-email"
+                          className="block text-sm font-medium mb-1"
+                        >
                           Email Address
                         </label>
                         <input
@@ -364,5 +405,5 @@ export function ProductTabs({ product, reviews }: ProductTabsProps) {
         )}
       </div>
     </div>
-  )
+  );
 }

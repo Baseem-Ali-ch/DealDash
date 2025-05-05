@@ -1,7 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,78 +16,94 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { StatusBadge } from "@/atoms/status-badge"
-import { CouponCode } from "@/atoms/coupon-code"
-import { type PromotionType, PromotionTypeIcon } from "@/atoms/promotion-type-icon"
-import { formatPrice } from "@/lib/utils"
-import { MoreHorizontal, Copy, Edit, Trash, BarChart, Download } from "lucide-react"
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { StatusBadge } from "@/atoms/status-badge";
+import { CouponCode } from "@/atoms/coupon-code";
+import {
+  type PromotionType,
+  PromotionTypeIcon,
+} from "@/atoms/promotion-type-icon";
+import { formatPrice } from "@/lib/utils/utils";
+import {
+  MoreHorizontal,
+  Copy,
+  Edit,
+  Trash,
+  BarChart,
+  Download,
+} from "lucide-react";
 
 export interface Promotion {
-  id: string
-  name: string
-  code: string
-  type: PromotionType
-  value: number
-  status: "active" | "scheduled" | "expired" | "draft" | "paused"
-  startDate: string
-  endDate: string
-  usageCount: number
-  usageLimit: number | null
-  minOrderValue: number | null
-  customerGroups: string[]
-  productCategories: string[]
-  firstTimeOnly: boolean
+  id: string;
+  name: string;
+  code: string;
+  type: PromotionType;
+  value: number;
+  status: "active" | "scheduled" | "expired" | "draft" | "paused";
+  startDate: string;
+  endDate: string;
+  usageCount: number;
+  usageLimit: number | null;
+  minOrderValue: number | null;
+  customerGroups: string[];
+  productCategories: string[];
+  firstTimeOnly: boolean;
 }
 
 interface PromotionsTableProps {
-  promotions: Promotion[]
-  onEdit: (id: string) => void
-  onDuplicate: (id: string) => void
-  onDelete: (id: string) => void
-  onViewAnalytics: (id: string) => void
+  promotions: Promotion[];
+  onEdit: (id: string) => void;
+  onDuplicate: (id: string) => void;
+  onDelete: (id: string) => void;
+  onViewAnalytics: (id: string) => void;
 }
 
-export function PromotionsTable({ promotions, onEdit, onDuplicate, onDelete, onViewAnalytics }: PromotionsTableProps) {
-  const [selectedRows, setSelectedRows] = useState<string[]>([])
+export function PromotionsTable({
+  promotions,
+  onEdit,
+  onDuplicate,
+  onDelete,
+  onViewAnalytics,
+}: PromotionsTableProps) {
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const toggleSelectAll = () => {
     if (selectedRows.length === promotions.length) {
-      setSelectedRows([])
+      setSelectedRows([]);
     } else {
-      setSelectedRows(promotions.map((p) => p.id))
+      setSelectedRows(promotions.map((p) => p.id));
     }
-  }
+  };
 
   const toggleSelectRow = (id: string) => {
     if (selectedRows.includes(id)) {
-      setSelectedRows(selectedRows.filter((rowId) => rowId !== id))
+      setSelectedRows(selectedRows.filter((rowId) => rowId !== id));
     } else {
-      setSelectedRows([...selectedRows, id])
+      setSelectedRows([...selectedRows, id]);
     }
-  }
+  };
 
   const formatValue = (type: PromotionType, value: number) => {
     switch (type) {
       case "percentage":
-        return `${value}%`
+        return `${value}%`;
       case "fixed":
-        return formatPrice(value)
+        return formatPrice(value);
       case "shipping":
-        return "Free Shipping"
+        return "Free Shipping";
       case "bogo":
-        return "Buy One Get One"
+        return "Buy One Get One";
       default:
-        return value.toString()
+        return value.toString();
     }
-  }
+  };
 
   const exportToCSV = () => {
     // Implementation for CSV export
-    console.log("Exporting to CSV")
-  }
+    console.log("Exporting to CSV");
+  };
 
   return (
     <div className="space-y-4">
@@ -90,7 +113,11 @@ export function PromotionsTable({ promotions, onEdit, onDuplicate, onDelete, onV
         </div>
         <div className="flex space-x-2">
           {selectedRows.length > 0 && (
-            <Button variant="outline" size="sm" onClick={() => setSelectedRows([])}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedRows([])}
+            >
               Clear Selection
             </Button>
           )}
@@ -107,7 +134,10 @@ export function PromotionsTable({ promotions, onEdit, onDuplicate, onDelete, onV
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox
-                  checked={selectedRows.length === promotions.length && promotions.length > 0}
+                  checked={
+                    selectedRows.length === promotions.length &&
+                    promotions.length > 0
+                  }
                   onCheckedChange={toggleSelectAll}
                   aria-label="Select all"
                 />
@@ -142,14 +172,20 @@ export function PromotionsTable({ promotions, onEdit, onDuplicate, onDelete, onV
                     <span className="capitalize">{promotion.type}</span>
                   </div>
                 </TableCell>
-                <TableCell>{formatValue(promotion.type, promotion.value)}</TableCell>
+                <TableCell>
+                  {formatValue(promotion.type, promotion.value)}
+                </TableCell>
                 <TableCell>
                   <StatusBadge status={promotion.status} />
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
-                    <div>{new Date(promotion.startDate).toLocaleDateString()}</div>
-                    <div>{new Date(promotion.endDate).toLocaleDateString()}</div>
+                    <div>
+                      {new Date(promotion.startDate).toLocaleDateString()}
+                    </div>
+                    <div>
+                      {new Date(promotion.endDate).toLocaleDateString()}
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -170,11 +206,15 @@ export function PromotionsTable({ promotions, onEdit, onDuplicate, onDelete, onV
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onDuplicate(promotion.id)}>
+                      <DropdownMenuItem
+                        onClick={() => onDuplicate(promotion.id)}
+                      >
                         <Copy className="mr-2 h-4 w-4" />
                         Duplicate
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onViewAnalytics(promotion.id)}>
+                      <DropdownMenuItem
+                        onClick={() => onViewAnalytics(promotion.id)}
+                      >
                         <BarChart className="mr-2 h-4 w-4" />
                         Analytics
                       </DropdownMenuItem>
@@ -202,5 +242,5 @@ export function PromotionsTable({ promotions, onEdit, onDuplicate, onDelete, onV
         </Table>
       </div>
     </div>
-  )
+  );
 }

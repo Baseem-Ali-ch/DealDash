@@ -1,17 +1,21 @@
-"use client"
+"use client";
 
-import React from "react"
+import React from "react";
 
-import { cn } from "@/lib/utils"
-import { Check } from "lucide-react"
+import { cn } from "@/lib/utils/utils";
+import { Check } from "lucide-react";
 
 interface CheckoutProgressProps {
-  steps: string[]
-  currentStep: number
-  onStepClick?: (step: number) => void
+  steps: string[];
+  currentStep: number;
+  onStepClick?: (step: number) => void;
 }
 
-export function CheckoutProgress({ steps, currentStep, onStepClick }: CheckoutProgressProps) {
+export function CheckoutProgress({
+  steps,
+  currentStep,
+  onStepClick,
+}: CheckoutProgressProps) {
   return (
     <div className="w-full">
       <div className="flex items-center justify-between">
@@ -21,7 +25,7 @@ export function CheckoutProgress({ steps, currentStep, onStepClick }: CheckoutPr
               <button
                 onClick={() => {
                   if (onStepClick && index < currentStep) {
-                    onStepClick(index)
+                    onStepClick(index);
                   }
                 }}
                 disabled={index > currentStep}
@@ -30,13 +34,19 @@ export function CheckoutProgress({ steps, currentStep, onStepClick }: CheckoutPr
                   {
                     "bg-primary text-white": index === currentStep,
                     "bg-primary/20 text-primary": index < currentStep,
-                    "bg-muted text-muted-foreground cursor-not-allowed": index > currentStep,
-                    "cursor-pointer hover:bg-primary/30": index < currentStep && onStepClick,
-                  },
+                    "bg-muted text-muted-foreground cursor-not-allowed":
+                      index > currentStep,
+                    "cursor-pointer hover:bg-primary/30":
+                      index < currentStep && onStepClick,
+                  }
                 )}
                 aria-current={index === currentStep ? "step" : undefined}
               >
-                {index < currentStep ? <Check className="h-5 w-5" /> : index + 1}
+                {index < currentStep ? (
+                  <Check className="h-5 w-5" />
+                ) : (
+                  index + 1
+                )}
               </button>
               <span
                 className={cn("mt-2 text-xs font-medium", {
@@ -59,5 +69,5 @@ export function CheckoutProgress({ steps, currentStep, onStepClick }: CheckoutPr
         ))}
       </div>
     </div>
-  )
+  );
 }

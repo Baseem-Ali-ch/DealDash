@@ -1,9 +1,17 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Eye, MoreHorizontal, Package, Truck, CheckCircle, XCircle, Clock } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Eye,
+  MoreHorizontal,
+  Package,
+  Truck,
+  CheckCircle,
+  XCircle,
+  Clock,
+} from "lucide-react";
+import { cn } from "@/lib/utils/utils";
 
 // Sample data
 const recentOrders = [
@@ -47,49 +55,49 @@ const recentOrders = [
     status: "delivered",
     items: 1,
   },
-]
+];
 
-type OrderStatus = "processing" | "shipped" | "delivered" | "cancelled"
+type OrderStatus = "processing" | "shipped" | "delivered" | "cancelled";
 
 interface OrderRowProps {
   order: {
-    id: string
-    customer: string
-    date: string
-    total: number
-    status: OrderStatus
-    items: number
-  }
+    id: string;
+    customer: string;
+    date: string;
+    total: number;
+    status: OrderStatus;
+    items: number;
+  };
 }
 
 const OrderRow = ({ order }: OrderRowProps) => {
-  const [showActions, setShowActions] = useState(false)
+  const [showActions, setShowActions] = useState(false);
 
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {
       case "processing":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-500"
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-500";
       case "shipped":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-500"
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-500";
       case "delivered":
-        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-500"
+        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-500";
       case "cancelled":
-        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-500"
+        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-500";
     }
-  }
+  };
 
   const getStatusIcon = (status: OrderStatus) => {
     switch (status) {
       case "processing":
-        return <Clock className="h-4 w-4" />
+        return <Clock className="h-4 w-4" />;
       case "shipped":
-        return <Truck className="h-4 w-4" />
+        return <Truck className="h-4 w-4" />;
       case "delivered":
-        return <CheckCircle className="h-4 w-4" />
+        return <CheckCircle className="h-4 w-4" />;
       case "cancelled":
-        return <XCircle className="h-4 w-4" />
+        return <XCircle className="h-4 w-4" />;
     }
-  }
+  };
 
   return (
     <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
@@ -100,7 +108,9 @@ const OrderRow = ({ order }: OrderRowProps) => {
           </div>
           <div>
             <div className="font-medium">{order.id}</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">{order.date}</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {order.date}
+            </div>
           </div>
         </div>
       </td>
@@ -117,7 +127,7 @@ const OrderRow = ({ order }: OrderRowProps) => {
         <span
           className={cn(
             "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium",
-            getStatusColor(order.status),
+            getStatusColor(order.status)
           )}
         >
           {getStatusIcon(order.status)}
@@ -167,15 +177,18 @@ const OrderRow = ({ order }: OrderRowProps) => {
         </div>
       </td>
     </tr>
-  )
-}
+  );
+};
 
 export function RecentOrders() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-semibold">Recent Orders</h2>
-        <Link href="/admin/orders" className="text-sm text-primary hover:underline">
+        <Link
+          href="/admin/orders"
+          className="text-sm text-primary hover:underline"
+        >
           View All
         </Link>
       </div>
@@ -224,5 +237,5 @@ export function RecentOrders() {
         </table>
       </div>
     </div>
-  )
+  );
 }

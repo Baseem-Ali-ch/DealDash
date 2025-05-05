@@ -130,16 +130,8 @@ export default function AdminLoginForm() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       const response = await login(credentials.email, credentials.password);
+      console.log("response", response);
       if (response.success) {
-        // Check if 2FA is enabled (mock check)
-        const has2FA = true;
-
-        if (has2FA) {
-          setShowTwoFactor(true);
-          setIsLoading(false);
-          return;
-        }
-
         localStorage.removeItem("adminFailedAttempts");
 
         router.push("/admin/dashboard");

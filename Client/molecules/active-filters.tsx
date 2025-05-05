@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { X } from "lucide-react"
-import { Button } from "@/atoms/button"
-import { Badge } from "@/atoms/badge"
-import { formatPrice } from "@/lib/utils"
+import { X } from "lucide-react";
+import { Button } from "@/atoms/button";
+import { Badge } from "@/atoms/badge";
+import { formatPrice } from "@/lib/utils/utils";
 
 interface ActiveFiltersProps {
-  categories?: string[]
-  brands?: string[]
-  priceRange?: { min: number; max: number }
-  ratings?: number[]
-  onRemoveCategory?: (category: string) => void
-  onRemoveBrand?: (brand: string) => void
-  onResetPriceRange?: () => void
-  onRemoveRating?: (rating: number) => void
-  onResetAll?: () => void
-  className?: string
+  categories?: string[];
+  brands?: string[];
+  priceRange?: { min: number; max: number };
+  ratings?: number[];
+  onRemoveCategory?: (category: string) => void;
+  onRemoveBrand?: (brand: string) => void;
+  onResetPriceRange?: () => void;
+  onRemoveRating?: (rating: number) => void;
+  onResetAll?: () => void;
+  className?: string;
 }
 
 export function ActiveFilters({
@@ -31,23 +31,36 @@ export function ActiveFilters({
   className = "",
 }: ActiveFiltersProps) {
   const hasActiveFilters =
-    categories?.length > 0 || brands?.length > 0 || ratings?.length > 0 || priceRange?.min > 0 || priceRange?.max < 1000
+    categories?.length > 0 ||
+    brands?.length > 0 ||
+    ratings?.length > 0 ||
+    priceRange?.min > 0 ||
+    priceRange?.max < 1000;
 
   if (!hasActiveFilters) {
-    return null
+    return null;
   }
 
   return (
     <div className={`mb-6 ${className}`}>
       <div className="mb-2 flex items-center justify-between">
         <h3 className="text-sm font-medium">Active Filters</h3>
-        <Button variant="link" size="sm" onClick={onResetAll} className="h-auto p-0 text-xs">
+        <Button
+          variant="link"
+          size="sm"
+          onClick={onResetAll}
+          className="h-auto p-0 text-xs"
+        >
           Clear All
         </Button>
       </div>
       <div className="flex flex-wrap gap-2">
         {categories?.map((category) => (
-          <Badge key={category} variant="secondary" className="flex items-center gap-1">
+          <Badge
+            key={category}
+            variant="secondary"
+            className="flex items-center gap-1"
+          >
             {category}
             <button
               onClick={() => onRemoveCategory(category)}
@@ -59,7 +72,11 @@ export function ActiveFilters({
           </Badge>
         ))}
         {brands?.map((brand) => (
-          <Badge key={brand} variant="secondary" className="flex items-center gap-1">
+          <Badge
+            key={brand}
+            variant="secondary"
+            className="flex items-center gap-1"
+          >
             {brand}
             <button
               onClick={() => onRemoveBrand(brand)}
@@ -83,7 +100,11 @@ export function ActiveFilters({
           </Badge>
         )}
         {ratings?.map((rating) => (
-          <Badge key={rating} variant="secondary" className="flex items-center gap-1">
+          <Badge
+            key={rating}
+            variant="secondary"
+            className="flex items-center gap-1"
+          >
             {rating}+ Stars
             <button
               onClick={() => onRemoveRating(rating)}
@@ -96,5 +117,5 @@ export function ActiveFilters({
         ))}
       </div>
     </div>
-  )
+  );
 }
