@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils/utils";
 import { toast } from "sonner";
 import { createBrand, updateBrand } from "@/lib/api/admin/brand";
 
-export function BrandForm({ brand = null, isOpen, onClose, onSave }) {
+export function BrandForm({ brand = null, isOpen, onClose, onSave }): BrandFormProps {
   const isEditing = !!brand?._id;
   const [isLoading, setIsLoading] = useState(false);
 

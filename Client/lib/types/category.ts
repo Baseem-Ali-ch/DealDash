@@ -3,10 +3,8 @@ interface Category {
   name?: string;
   slug?: string;
   description?: string;
-  parentId?: string;
   status?: string;
   image?: { url: string; name: string; size: number; type: string } | null;
-  seo?: { title: string; description: string; keywords: string };
 }
 
 interface CategoryFormProps {

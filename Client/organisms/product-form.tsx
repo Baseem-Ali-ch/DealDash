@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Sheet,
@@ -26,6 +26,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { X, Plus, ImagePlus, AlertCircle, Info } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
+import { fetchBrands } from "@/lib/api/admin/brand";
+import { fetchCategories } from "@/lib/api/admin/category";
+import { toast } from "sonner";
 
 // Mock categories and brands - would come from API in real app
 const mockCategories = [
@@ -88,8 +91,6 @@ export function ProductForm({ product = null, isOpen, onClose, onSave }) {
     status: product?.status || "draft",
     images: product?.images || [],
     variants: product?.variants || [],
-    seo: product?.seo || { title: "", description: "", keywords: "" },
-    taxable: product?.taxable !== undefined ? product.taxable : true,
     shippingRequired:
       product?.shippingRequired !== undefined ? product.shippingRequired : true,
     hasVariants: product?.variants?.length > 0 || false,
@@ -100,6 +101,38 @@ export function ProductForm({ product = null, isOpen, onClose, onSave }) {
   const [activeTab, setActiveTab] = useState("general");
   const [isDirty, setIsDirty] = useState(false);
   const [activeVariantTab, setActiveVariantTab] = useState(0);
+  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const [brandsResponse, categoriesResponse] = await Promise.all([
+          fetchBrands(),
+          fetchCategories()
+        ]);
+
+
+        if (brandsResponse.success) {
+          setBrands(brandsResponse.data);
+        }
+
+        if (categoriesResponse.success) {
+          setCategories(categoriesResponse.data);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        toast.error('Failed to load categories or brands');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
 
   // Handle input change
   const handleChange = (e) => {
@@ -373,7 +406,6 @@ export function ProductForm({ product = null, isOpen, onClose, onSave }) {
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="variants">Variants</TabsTrigger>
-            <TabsTrigger value="seo">SEO</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="space-y-4">
@@ -471,7 +503,7 @@ export function ProductForm({ product = null, isOpen, onClose, onSave }) {
                   </div>
 
                   <div>
-                    <Label htmlFor="compareAtPrice">Compare at Price</Label>
+                    <Label htmlFor="compareAtPrice">Cost per Item</Label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2">
                         $
@@ -487,25 +519,6 @@ export function ProductForm({ product = null, isOpen, onClose, onSave }) {
                         step="0.01"
                       />
                     </div>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="cost">Cost per Item</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2">
-                      $
-                    </span>
-                    <Input
-                      id="cost"
-                      name="cost"
-                      value={formData.cost}
-                      onChange={handleChange}
-                      className="pl-7"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                    />
                   </div>
                 </div>
               </CardContent>
@@ -556,76 +569,77 @@ export function ProductForm({ product = null, isOpen, onClose, onSave }) {
             </Card>
 
             <Card>
-              <CardContent className="p-6 space-y-4">
-                <h3 className="text-lg font-medium mb-2">Organization</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label
-                      htmlFor="categoryId"
-                      className={cn(errors.categoryId && "text-red-500")}
-                    >
-                      Category*
-                    </Label>
-                    <Select
-                      value={formData.categoryId}
-                      onValueChange={(value) => {
-                        setFormData((prev) => ({ ...prev, categoryId: value }));
-                        setIsDirty(true);
-                        if (errors.categoryId) {
-                          setErrors((prev) => ({ ...prev, categoryId: null }));
-                        }
-                      }}
-                    >
-                      <SelectTrigger
-                        className={cn(errors.categoryId && "border-red-500")}
-                      >
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {mockCategories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {errors.categoryId && (
-                      <p className="text-red-500 text-sm mt-1 flex items-center">
-                        <AlertCircle className="h-4 w-4 mr-1" />
-                        {errors.categoryId}
-                      </p>
-                    )}
-                  </div>
+      <CardContent className="p-6 space-y-4">
+        <h3 className="text-lg font-medium mb-2">Organization</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label
+              htmlFor="categoryId"
+              className={cn(errors.categoryId && "text-red-500")}
+            >
+              Category*
+            </Label>
+            <Select
+              value={formData.categoryId}
+              onValueChange={(value) => {
+                setFormData((prev) => ({ ...prev, categoryId: value }));
+                setIsDirty(true);
+                if (errors.categoryId) {
+                  setErrors((prev) => ({ ...prev, categoryId: null }));
+                }
+              }}
+            >
+              <SelectTrigger
+                className={cn(errors.categoryId && "border-red-500")}
+                disabled={isLoading}
+              >
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category._id} value={category._id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.categoryId && (
+              <p className="text-red-500 text-sm mt-1 flex items-center">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.categoryId}
+              </p>
+            )}
+          </div>
 
-                  <div>
-                    <Label htmlFor="brandId">Brand</Label>
-                    <Select
-                      value={formData.brandId}
-                      onValueChange={(value) => {
-                        setFormData((prev) => ({ ...prev, brandId: value }));
-                        setIsDirty(true);
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select brand" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {mockBrands.map((brand) => (
-                          <SelectItem key={brand.id} value={brand.id}>
-                            {brand.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div>
+            <Label htmlFor="brandId">Brand</Label>
+            <Select
+              value={formData.brandId}
+              onValueChange={(value) => {
+                setFormData((prev) => ({ ...prev, brandId: value }));
+                setIsDirty(true);
+              }}
+            >
+              <SelectTrigger disabled={isLoading}>
+                <SelectValue placeholder="Select brand" />
+              </SelectTrigger>
+              <SelectContent>
+                {brands.map((brand) => (
+                  <SelectItem key={brand._id} value={brand._id}>
+                    {brand.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
 
             <Card>
               <CardContent className="p-6 space-y-4">
                 <h3 className="text-lg font-medium mb-2">Options</h3>
-                <div className="grid grid-cols-2 gap-4">
+                {/* <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="taxable"
@@ -647,9 +661,9 @@ export function ProductForm({ product = null, isOpen, onClose, onSave }) {
                     />
                     <Label htmlFor="shippingRequired">Requires Shipping</Label>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <Switch
                     id="hasVariants"
                     checked={formData.hasVariants}
@@ -659,7 +673,7 @@ export function ProductForm({ product = null, isOpen, onClose, onSave }) {
                     This product has multiple options, like different sizes or
                     colors
                   </Label>
-                </div>
+                </div> */}
 
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -1049,59 +1063,6 @@ export function ProductForm({ product = null, isOpen, onClose, onSave }) {
                     </Tabs>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="seo" className="space-y-4">
-            <Card>
-              <CardContent className="p-6 space-y-4">
-                <h3 className="text-lg font-medium mb-2">
-                  Search Engine Optimization
-                </h3>
-                <div>
-                  <Label htmlFor="seo-title">SEO Title</Label>
-                  <Input
-                    id="seo-title"
-                    value={formData.seo.title}
-                    onChange={(e) =>
-                      handleNestedChange("seo", "title", e.target.value)
-                    }
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    {formData.seo.title.length} / 60 characters
-                  </p>
-                </div>
-
-                <div>
-                  <Label htmlFor="seo-description">Meta Description</Label>
-                  <Textarea
-                    id="seo-description"
-                    value={formData.seo.description}
-                    onChange={(e) =>
-                      handleNestedChange("seo", "description", e.target.value)
-                    }
-                    rows={3}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    {formData.seo.description.length} / 160 characters
-                  </p>
-                </div>
-
-                <div>
-                  <Label htmlFor="seo-keywords">Meta Keywords</Label>
-                  <Input
-                    id="seo-keywords"
-                    value={formData.seo.keywords}
-                    onChange={(e) =>
-                      handleNestedChange("seo", "keywords", e.target.value)
-                    }
-                    placeholder="keyword1, keyword2, keyword3"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Separate keywords with commas
-                  </p>
-                </div>
               </CardContent>
             </Card>
           </TabsContent>

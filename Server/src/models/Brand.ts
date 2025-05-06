@@ -1,16 +1,15 @@
 import { model, Schema } from "mongoose";
-import { ICategory } from "../interfaces/ICategory";
+import { IBrand } from "../interfaces/IBrand";
 
-const categorySchema = new Schema<ICategory>(
+const brandSchema = new Schema<IBrand>(
   {
     name: {
       type: String,
       required: true,
     },
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
+    website:{
+        type: String,
+        required: true,
     },
     status: {
       type: String,
@@ -28,4 +27,4 @@ const categorySchema = new Schema<ICategory>(
   { timestamps: true }
 );
 
-export const CategoryModel = model<ICategory>("Category", categorySchema);
+export const BrandModel = model<IBrand>("Brand", brandSchema);

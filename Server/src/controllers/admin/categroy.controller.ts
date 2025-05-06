@@ -20,7 +20,7 @@ export const getCategories = async (req: any, res: any): Promise<any> => {
 
 export const createCategory = async (req: any, res: any): Promise<any> => {
   try {
-    const { name, description, iamgeurl, slug, status } = req.body;
+    const { name, description, imageurl, slug, status } = req.body;
     if (!name || !description) {
       return res.status(HttpStatusCode.BAD_REQUEST).json({
         message: StatusMessage.BAD_REQUEST,
@@ -28,12 +28,11 @@ export const createCategory = async (req: any, res: any): Promise<any> => {
     }
 
     let imageUrl = null;
-    if (iamgeurl) {
+    if (imageurl) {
       try {
         // Upload image to Cloudinary
-        const uploadResponse = await uploadToCloudinary(iamgeurl);
+        const uploadResponse = await uploadToCloudinary(imageurl);
         imageUrl = uploadResponse.secure_url;
-        console.log("Image URL:", imageUrl);
       } catch (uploadError) {
         console.error("Error uploading to Cloudinary:", uploadError);
         return res.status(HttpStatusCode.BAD_REQUEST).json({
