@@ -26,7 +26,6 @@ import {
   MoreHorizontal,
   Eye,
   Edit,
-  Copy,
   Trash,
   ArrowUpDown,
 } from "lucide-react";
@@ -34,32 +33,11 @@ import { ProductCard } from "@/molecules/product-card";
 import { Pagination } from "@/molecules/pagination";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils/utils";
-
-// Mock data - would come from API in real app
-const mockProducts = Array.from({ length: 50 }).map((_, i) => ({
-  id: `prod-${i + 1}`,
-  image: `/placeholder.svg?height=80&width=80&text=Product ${i + 1}`,
-  name: `Product ${i + 1}`,
-  sku: `SKU-${1000 + i}`,
-  category:
-    i % 5 === 0
-      ? "Electronics"
-      : i % 4 === 0
-      ? "Clothing"
-      : i % 3 === 0
-      ? "Home"
-      : i % 2 === 0
-      ? "Books"
-      : "Toys",
-  stock: Math.floor(Math.random() * 100),
-  price: (Math.random() * 100 + 10).toFixed(2),
-  status: i % 3 === 0 ? "draft" : "published",
-  createdAt: new Date(
-    Date.now() - Math.floor(Math.random() * 10000000000)
-  ).toISOString(),
-}));
+import { deleteProduct, toggleProductStatus } from "@/lib/api/admin/product";
 
 export function ProductsTable({
+  products = [],
+  isLoading = false,
   page = 1,
   perPage = 10,
   sortBy = "createdAt",
@@ -72,12 +50,12 @@ export function ProductsTable({
   onQuickView,
   selectedProducts = [],
   onSelectProducts,
+  onDelete,
+  onStatusToggle,
 }) {
   const { toast } = useToast();
-  const [products, setProducts] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [totalItems, setTotalItems] = useState(0);
+  const [totalItems, setTotalItems] = useState(products.length);
 
   // Check if mobile
   useEffect(() => {
@@ -87,41 +65,15 @@ export function ProductsTable({
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
-  // Fetch products - simulated API call
+  // Update totalItems when products change
   useEffect(() => {
-    setLoading(true);
-
-    // Sort function
-    const sortProducts = (a, b) => {
-      if (sortBy === "price" || sortBy === "stock") {
-        return sortOrder === "asc"
-          ? Number(a[sortBy]) - Number(b[sortBy])
-          : Number(b[sortBy]) - Number(a[sortBy]);
-      }
-
-      return sortOrder === "asc"
-        ? a[sortBy].localeCompare(b[sortBy])
-        : b[sortBy].localeCompare(a[sortBy]);
-    };
-
-    // Simulate API delay
-    setTimeout(() => {
-      const sortedProducts = [...mockProducts].sort(sortProducts);
-      const paginatedProducts = sortedProducts.slice(
-        (page - 1) * perPage,
-        page * perPage
-      );
-
-      setProducts(paginatedProducts);
-      setTotalItems(mockProducts.length);
-      setLoading(false);
-    }, 500);
-  }, [page, perPage, sortBy, sortOrder]);
+    setTotalItems(products.length);
+  }, [products]);
 
   // Handle select all
   const handleSelectAll = (checked) => {
     if (checked) {
-      onSelectProducts(products.map((product) => product.id));
+      onSelectProducts(products.map((product) => product._id));
     } else {
       onSelectProducts([]);
     }
@@ -137,29 +89,52 @@ export function ProductsTable({
   };
 
   // Handle status toggle
-  const handleStatusToggle = (productId, currentStatus) => {
-    const newStatus = currentStatus === "published" ? "draft" : "published";
+  const handleStatusToggle = async (productId: string, currentStatus: string) => {
+    try {
+      const newStatus = currentStatus === "published" ? "draft" : "published";
+      const response = await toggleProductStatus(productId, newStatus);
 
-    // In a real app, this would be an API call
-    setProducts(
-      products.map((product) =>
-        product.id === productId ? { ...product, status: newStatus } : product
-      )
-    );
-
-    toast({
-      title: "Status Updated",
-      description: `Product status changed to ${newStatus}.`,
-    });
+      if (response.success) {
+        onStatusToggle(productId, newStatus); // Notify parent of status change
+        toast({
+          title: "Status Updated",
+          description: `Product status changed to ${newStatus}.`,
+        });
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      console.error("Status toggle error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update product status",
+        variant: "destructive",
+      });
+    }
   };
 
   // Handle delete
-  const handleDelete = (productId) => {
-    // In a real app, this would be an API call
-    toast({
-      title: "Product Deleted",
-      description: "The product has been deleted successfully.",
-    });
+  const handleDelete = async (productId) => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+    try {
+      const response = await deleteProduct(productId);
+      if (response.success) {
+        onDelete(productId); // Notify parent of deletion
+        toast({
+          title: "Product Deleted",
+          description: "The product has been successfully deleted.",
+        });
+      } else {
+        throw new Error(response.message);
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete product",
+        variant: "destructive",
+      });
+    }
   };
 
   // Render sort icon
@@ -187,7 +162,7 @@ export function ProductsTable({
     );
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="w-full h-96 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -201,16 +176,16 @@ export function ProductsTable({
       <div className="space-y-4">
         {products.map((product) => (
           <ProductCard
-            key={product.id}
+            key={product._id}
             product={product}
-            isSelected={selectedProducts.includes(product.id)}
-            onSelect={(checked) => handleSelectOne(checked, product.id)}
+            isSelected={selectedProducts.includes(product._id)}
+            onSelect={(checked) => handleSelectOne(checked, product._id)}
             onQuickView={() => onQuickView && onQuickView(product)}
             onEdit={() => onEdit && onEdit(product)}
             onDuplicate={() => onDuplicate && onDuplicate(product)}
-            onDelete={() => handleDelete(product.id)}
+            onDelete={() => handleDelete(product._id)}
             onStatusToggle={() =>
-              handleStatusToggle(product.id, product.status)
+              handleStatusToggle(product._id, product.status)
             }
           />
         ))}
@@ -291,12 +266,12 @@ export function ProductsTable({
           </TableHeader>
           <TableBody>
             {products.map((product) => (
-              <TableRow key={product.id}>
+              <TableRow key={product._id}>
                 <TableCell>
                   <Checkbox
-                    checked={selectedProducts.includes(product.id)}
+                    checked={selectedProducts.includes(product._id)}
                     onCheckedChange={(checked) =>
-                      handleSelectOne(checked, product.id)
+                      handleSelectOne(checked, product._id)
                     }
                     aria-label={`Select ${product.name}`}
                   />
@@ -304,7 +279,7 @@ export function ProductsTable({
                 <TableCell>
                   <div className="relative h-10 w-10 rounded-md overflow-hidden">
                     <Image
-                      src={product.image || "/placeholder.svg"}
+                      src={product.images?.[0]?.url || "/placeholder.svg"}
                       alt={product.name}
                       fill
                       className="object-cover"
@@ -313,7 +288,14 @@ export function ProductsTable({
                 </TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell>{product.sku}</TableCell>
-                <TableCell>{product.category}</TableCell>
+                <TableCell>
+                  {
+                    product.category?.name ||
+                      (typeof product.categoryId === "object" &&
+                        product.categoryId?.name) ||
+                      "Uncategorized"
+                  }
+                </TableCell>
                 <TableCell>
                   <span
                     className={cn(
@@ -334,7 +316,7 @@ export function ProductsTable({
                     <Switch
                       checked={product.status === "published"}
                       onCheckedChange={() =>
-                        handleStatusToggle(product.id, product.status)
+                        handleStatusToggle(product._id, product.status)
                       }
                     />
                     {renderStatus(product.status)}
@@ -362,14 +344,8 @@ export function ProductsTable({
                         <span>Edit</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => onDuplicate && onDuplicate(product)}
-                      >
-                        <Copy className="mr-2 h-4 w-4" />
-                        <span>Duplicate</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
                         className="text-red-600 focus:text-red-600"
-                        onClick={() => handleDelete(product.id)}
+                        onClick={() => handleDelete(product._id)}
                       >
                         <Trash className="mr-2 h-4 w-4" />
                         <span>Delete</span>

@@ -6,30 +6,30 @@ import jwt from "jsonwebtoken";
 import { AdminModel } from "../../models/Admin";
 
 // This controller handles the login functionality for admin users
-export const login = async (req: Request, res: Response): Promise<any> => {
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(HttpStatusCode.BAD_REQUEST).json({
+      res.status(HttpStatusCode.BAD_REQUEST).json({
         message: StatusMessage.BAD_REQUEST,
       });
     }
 
     const admin = await AdminModel.findOne({ email });
     if (!admin) {
-      return res.status(HttpStatusCode.NOT_FOUND).json({
+      res.status(HttpStatusCode.NOT_FOUND).json({
         message: "Admin not found.",
       });
     } else {
       if (!admin.isAdmin) {
-        return res.status(HttpStatusCode.UNAUTHORIZED).json({
+        res.status(HttpStatusCode.UNAUTHORIZED).json({
           message: "Unauthorized access.",
         });
       }
 
       const isPasswordValid = await bcrypt.compare(password, admin.password);
       if (!isPasswordValid) {
-        return res.status(HttpStatusCode.UNAUTHORIZED).json({
+        res.status(HttpStatusCode.UNAUTHORIZED).json({
           message: "Invalid password.",
         });
       }

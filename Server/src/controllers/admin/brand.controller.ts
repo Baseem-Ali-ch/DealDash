@@ -2,8 +2,10 @@ import { HttpStatusCode } from "../../constants/httpStatusCodes";
 import { StatusMessage } from "../../constants/responseMessages";
 import { uploadToCloudinary } from "../../config/cloudinary";
 import { BrandModel } from "../../models/Brand";
+import { Request, Response } from "express";
+import { CreateBrandRequest, IBrand } from "../../interfaces/IBrand";
 
-export const getBrands = async (req: any, res: any): Promise<any> => {
+export const getBrands = async (req: Request, res: Response): Promise<void> => {
   try {
     const brands = await BrandModel.find({}).sort({ createdAt: -1 });
     res.status(HttpStatusCode.OK).json({
@@ -18,11 +20,14 @@ export const getBrands = async (req: any, res: any): Promise<any> => {
   }
 };
 
-export const createBrands = async (req: any, res: any): Promise<any> => {
+export const createBrands = async (
+  req: Request<CreateBrandRequest>,
+  res: Response<{ message: string; data?: IBrand; success?: boolean }>
+): Promise<void> => {
   try {
     const { name, description, imageurl, website, status } = req.body;
     if (!name || !description) {
-      return res.status(HttpStatusCode.BAD_REQUEST).json({
+      res.status(HttpStatusCode.BAD_REQUEST).json({
         message: StatusMessage.BAD_REQUEST,
       });
     }
@@ -35,7 +40,7 @@ export const createBrands = async (req: any, res: any): Promise<any> => {
         imageUrl = uploadResponse.secure_url;
       } catch (uploadError) {
         console.error("Error uploading to Cloudinary:", uploadError);
-        return res.status(HttpStatusCode.BAD_REQUEST).json({
+        res.status(HttpStatusCode.BAD_REQUEST).json({
           success: false,
           message: "Error uploading image",
         });
@@ -64,12 +69,15 @@ export const createBrands = async (req: any, res: any): Promise<any> => {
   }
 };
 
-export const updateBrands = async (req: any, res: any): Promise<any> => {
+export const updateBrands = async (
+  req: Request,
+  res: Response<{ message: string; data?: IBrand; success?: boolean }>
+): Promise<void> => {
   try {
     const { name, description, imageurl, website, status } = req.body;
     const { id } = req.params;
     if (!name || !description) {
-      return res.status(HttpStatusCode.BAD_REQUEST).json({
+      res.status(HttpStatusCode.BAD_REQUEST).json({
         message: StatusMessage.BAD_REQUEST,
       });
     }
@@ -92,7 +100,7 @@ export const updateBrands = async (req: any, res: any): Promise<any> => {
         };
       } catch (uploadError) {
         console.error("Error uploading to Cloudinary:", uploadError);
-        return res.status(HttpStatusCode.BAD_REQUEST).json({
+        res.status(HttpStatusCode.BAD_REQUEST).json({
           success: false,
           message: "Error uploading image",
         });
@@ -104,7 +112,7 @@ export const updateBrands = async (req: any, res: any): Promise<any> => {
     });
 
     if (!brands) {
-      return res.status(HttpStatusCode.NOT_FOUND).json({
+      res.status(HttpStatusCode.NOT_FOUND).json({
         message: StatusMessage.NOT_FOUND,
       });
     }
@@ -112,7 +120,7 @@ export const updateBrands = async (req: any, res: any): Promise<any> => {
     res.status(HttpStatusCode.OK).json({
       success: true,
       message: StatusMessage.SUCCESS,
-      data: brands,
+      data: brands || undefined,
     });
   } catch (error) {
     console.error("Error in update brands:", error);
@@ -123,20 +131,23 @@ export const updateBrands = async (req: any, res: any): Promise<any> => {
   }
 };
 
-export const deleteBrands = async (req: any, res: any): Promise<any> => {
+export const deleteBrands = async (
+  req: Request<{ id: string }>,
+  res: Response<{ message: string; data?: IBrand }>
+): Promise<void> => {
   try {
     const { id } = req.params;
     const brands = await BrandModel.findByIdAndDelete(id);
 
     if (!brands) {
-      return res.status(HttpStatusCode.NOT_FOUND).json({
+      res.status(HttpStatusCode.NOT_FOUND).json({
         message: StatusMessage.NOT_FOUND,
       });
     }
 
     res.status(HttpStatusCode.OK).json({
       message: StatusMessage.SUCCESS,
-      data: brands,
+      data: brands || undefined,
     });
   } catch (error) {
     console.log("Error in delete brands:", error);
@@ -146,7 +157,10 @@ export const deleteBrands = async (req: any, res: any): Promise<any> => {
   }
 };
 
-export const toggleBrandsStatus = async (req: any, res: any): Promise<void> => {
+export const toggleBrandsStatus = async (
+  req: Request<{ brandId: string }>,
+  res: Response<{ message: string; data?: IBrand; success: boolean }>
+): Promise<void> => {
   try {
     const { brandId } = req.params;
     const { status } = req.body;

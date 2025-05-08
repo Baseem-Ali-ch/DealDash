@@ -2,8 +2,17 @@ import { CategoryModel } from "../../models/Category";
 import { HttpStatusCode } from "../../constants/httpStatusCodes";
 import { StatusMessage } from "../../constants/responseMessages";
 import { uploadToCloudinary } from "../../config/cloudinary";
+import { Request, Response } from "express";
+import {
+  CreateCategoryRequest,
+  UpdateCategoryRequest,
+} from "../../interfaces/ICategory";
+import { ICategory } from "../../interfaces/ICategory";
 
-export const getCategories = async (req: any, res: any): Promise<any> => {
+export const getCategories = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const categories = await CategoryModel.find({}).sort({ createdAt: -1 });
     res.status(HttpStatusCode.OK).json({
@@ -18,11 +27,14 @@ export const getCategories = async (req: any, res: any): Promise<any> => {
   }
 };
 
-export const createCategory = async (req: any, res: any): Promise<any> => {
+export const createCategory = async (
+  req: Request<CreateCategoryRequest>,
+  res: Response<{ message: string; data?: ICategory; success?: boolean }>
+): Promise<void> => {
   try {
     const { name, description, imageurl, slug, status } = req.body;
     if (!name || !description) {
-      return res.status(HttpStatusCode.BAD_REQUEST).json({
+      res.status(HttpStatusCode.BAD_REQUEST).json({
         message: StatusMessage.BAD_REQUEST,
       });
     }
@@ -35,7 +47,7 @@ export const createCategory = async (req: any, res: any): Promise<any> => {
         imageUrl = uploadResponse.secure_url;
       } catch (uploadError) {
         console.error("Error uploading to Cloudinary:", uploadError);
-        return res.status(HttpStatusCode.BAD_REQUEST).json({
+        res.status(HttpStatusCode.BAD_REQUEST).json({
           success: false,
           message: "Error uploading image",
         });
@@ -53,7 +65,7 @@ export const createCategory = async (req: any, res: any): Promise<any> => {
 
     res.status(HttpStatusCode.CREATED).json({
       message: StatusMessage.SUCCESS,
-      data: category,
+      data: category || undefined,
     });
   } catch (error) {
     console.log("Error in create category:", error);
@@ -64,12 +76,15 @@ export const createCategory = async (req: any, res: any): Promise<any> => {
   }
 };
 
-export const updateCategory = async (req: any, res: any): Promise<any> => {
+export const updateCategory = async (
+  req: Request<UpdateCategoryRequest>,
+  res: Response<{ message: string; data?: ICategory; success?: boolean }>
+): Promise<void> => {
   try {
     const { name, description, slug, status, imageurl } = req.body;
     const { id } = req.params;
     if (!name || !description) {
-      return res.status(HttpStatusCode.BAD_REQUEST).json({
+      res.status(HttpStatusCode.BAD_REQUEST).json({
         message: StatusMessage.BAD_REQUEST,
       });
     }
@@ -92,7 +107,7 @@ export const updateCategory = async (req: any, res: any): Promise<any> => {
         };
       } catch (uploadError) {
         console.error("Error uploading to Cloudinary:", uploadError);
-        return res.status(HttpStatusCode.BAD_REQUEST).json({
+        res.status(HttpStatusCode.BAD_REQUEST).json({
           success: false,
           message: "Error uploading image",
         });
@@ -104,7 +119,7 @@ export const updateCategory = async (req: any, res: any): Promise<any> => {
     });
 
     if (!category) {
-      return res.status(HttpStatusCode.NOT_FOUND).json({
+      res.status(HttpStatusCode.NOT_FOUND).json({
         message: StatusMessage.NOT_FOUND,
       });
     }
@@ -112,7 +127,7 @@ export const updateCategory = async (req: any, res: any): Promise<any> => {
     res.status(HttpStatusCode.OK).json({
       success: true,
       message: StatusMessage.SUCCESS,
-      data: category,
+      data: category || undefined,
     });
   } catch (error) {
     console.error("Error in update category:", error);
@@ -123,20 +138,23 @@ export const updateCategory = async (req: any, res: any): Promise<any> => {
   }
 };
 
-export const deleteCategory = async (req: any, res: any): Promise<any> => {
+export const deleteCategory = async (
+  req: Request<{ id: string }>,
+  res: Response<{ message: string; data?: ICategory }>
+): Promise<void> => {
   try {
     const { id } = req.params;
     const category = await CategoryModel.findByIdAndDelete(id);
 
     if (!category) {
-      return res.status(HttpStatusCode.NOT_FOUND).json({
+      res.status(HttpStatusCode.NOT_FOUND).json({
         message: StatusMessage.NOT_FOUND,
       });
     }
 
     res.status(HttpStatusCode.OK).json({
       message: StatusMessage.SUCCESS,
-      data: category,
+      data: category || undefined,
     });
   } catch (error) {
     console.log("Error in delete category:", error);
@@ -147,8 +165,8 @@ export const deleteCategory = async (req: any, res: any): Promise<any> => {
 };
 
 export const toggleCategoryStatus = async (
-  req: any,
-  res: any
+  req: Request<{ categoryId: string }>,
+  res: Response<{ message: string; data?: ICategory; success: boolean }>
 ): Promise<void> => {
   try {
     const { categoryId } = req.params;

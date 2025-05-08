@@ -1,15 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
-import { ProductsTable } from "@/organisms/products-table"
-import { ProductsHeader } from "@/organisms/products-header"
-import { ProductsFilters } from "@/organisms/products-filters"
-import { ProductForm } from "@/organisms/product-form"
-import { ProductQuickView } from "@/organisms/product-quick-view"
-import { ImportProductsModal } from "@/organisms/import-products-modal"
-import { BulkActionsModal } from "@/organisms/bulk-actions-modal"
-import { useToast } from "@/hooks/use-toast"
+import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { ProductsTable } from "@/organisms/products-table";
+import { ProductsHeader } from "@/organisms/products-header";
+import { ProductsFilters } from "@/organisms/products-filters";
+import { ProductForm } from "@/organisms/product-form";
+import { AdminProductQuickView } from "@/organisms/admin-product-quick-view";
+import { ImportProductsModal } from "@/organisms/import-products-modal";
+import { BulkActionsModal } from "@/organisms/bulk-actions-modal";
+import { useToast } from "@/hooks/use-toast";
+import { fetchProduct } from "@/lib/api/admin/product";
 
 export function ProductsManagementTemplate() {
   const searchParams = useSearchParams();
@@ -22,6 +23,8 @@ export function ProductsManagementTemplate() {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isBulkActionModalOpen, setIsBulkActionModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [products, setProducts] = useState([]);
 
   // Product states
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -70,7 +73,11 @@ export function ProductsManagementTemplate() {
   // Handle product duplicate
   const handleDuplicateProduct = (product) => {
     if (!product) return;
-    setSelectedProduct({ ...product, id: null, name: `Copy of ${product.name}` });
+    setSelectedProduct({
+      ...product,
+      _id: null,
+      name: `Copy of ${product.name}`,
+    });
     setIsProductFormOpen(true);
   };
 
@@ -82,10 +89,32 @@ export function ProductsManagementTemplate() {
   };
 
   // Handle product save
-  const handleSaveProduct = (product) => {
-    if (!product) return;
+  const handleSaveProduct = (updatedProduct) => {
+    if (!updatedProduct) return;
     setIsProductFormOpen(false);
-    // Optionally refresh the table or update state here
+    if (updatedProduct._id) {
+      // Update existing product
+      setProducts((prev) =>
+        prev.map((p) =>
+          p._id === updatedProduct._id ? { ...p, ...updatedProduct } : p
+        )
+      );
+    } else {
+      // Add new product
+      setProducts((prev) => [updatedProduct, ...prev]);
+    }
+  };
+
+  // Handle product delete
+  const handleDeleteProduct = (productId) => {
+    setProducts((prev) => prev.filter((p) => p._id !== productId));
+  };
+
+  // Handle status toggle
+  const handleStatusToggle = (productId, newStatus) => {
+    setProducts((prev) =>
+      prev.map((p) => (p._id === productId ? { ...p, status: newStatus } : p))
+    );
   };
 
   // Handle bulk actions
@@ -102,6 +131,7 @@ export function ProductsManagementTemplate() {
     });
     setSelectedProducts([]);
     setIsBulkActionModalOpen(false);
+    // Optionally refresh products here if bulk action affects product data
   };
 
   // Handle export
@@ -111,6 +141,61 @@ export function ProductsManagementTemplate() {
       description: `Your products are being exported to ${format.toUpperCase()}.`,
     });
   };
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetchProduct({
+          page,
+          perPage,
+          search,
+          sortBy,
+          sortOrder,
+          category,
+          status,
+          minPrice,
+          maxPrice,
+          minStock,
+          maxStock,
+        });
+
+        if (response.success) {
+          setProducts(response.data);
+          console.log("Fetched products:", response.data);
+        } else {
+          toast({
+            title: "Error",
+            description: response.message || "Failed to fetch products",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load products",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, [
+    page,
+    perPage,
+    search,
+    sortBy,
+    sortOrder,
+    category,
+    status,
+    minPrice,
+    maxPrice,
+    minStock,
+    maxStock,
+  ]);
 
   return (
     <div className="space-y-6">
@@ -126,7 +211,15 @@ export function ProductsManagementTemplate() {
       <ProductsFilters
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
-        filters={{ category, status, minPrice, maxPrice, minStock, maxStock, search }}
+        filters={{
+          category,
+          status,
+          minPrice,
+          maxPrice,
+          minStock,
+          maxStock,
+          search,
+        }}
         onApplyFilters={(filters) => {
           updateParams({ ...filters, page: 1 });
           setIsFilterOpen(false);
@@ -134,18 +227,26 @@ export function ProductsManagementTemplate() {
       />
 
       <ProductsTable
+        products={products}
+        isLoading={isLoading}
         page={page}
         perPage={perPage}
         sortBy={sortBy}
         sortOrder={sortOrder}
         onPageChange={(newPage) => updateParams({ page: newPage })}
-        onPerPageChange={(newPerPage) => updateParams({ perPage: newPerPage, page: 1 })}
-        onSort={(column, order) => updateParams({ sortBy: column, sortOrder: order })}
+        onPerPageChange={(newPerPage) =>
+          updateParams({ perPage: newPerPage, page: 1 })
+        }
+        onSort={(column, order) =>
+          updateParams({ sortBy: column, sortOrder: order })
+        }
         onEdit={handleEditProduct}
         onDuplicate={handleDuplicateProduct}
         onQuickView={handleQuickView}
         selectedProducts={selectedProducts}
         onSelectProducts={setSelectedProducts}
+        onDelete={handleDeleteProduct}
+        onStatusToggle={handleStatusToggle}
       />
 
       {isProductFormOpen && (
@@ -158,7 +259,7 @@ export function ProductsManagementTemplate() {
       )}
 
       {isQuickViewOpen && selectedProduct && (
-        <ProductQuickView
+        <AdminProductQuickView
           product={selectedProduct}
           isOpen={isQuickViewOpen}
           onClose={() => setIsQuickViewOpen(false)}
@@ -170,7 +271,10 @@ export function ProductsManagementTemplate() {
       )}
 
       {isImportModalOpen && (
-        <ImportProductsModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} />
+        <ImportProductsModal
+          isOpen={isImportModalOpen}
+          onClose={() => setIsImportModalOpen(false)}
+        />
       )}
 
       {isBulkActionModalOpen && (

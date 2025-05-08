@@ -1,13 +1,28 @@
-import { Document } from "mongoose";
+import { Document } from 'mongoose';
 
 export interface ICategory extends Document {
   name: string;
-  slug: string;
   description: string;
-  parentId?: string;
-  imageUrl: string;
-  status: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  id?: string;
+  slug?: string;
+  imageUrl?: string;
+  status?: 'active' | 'inactive';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateCategoryRequest {
+  name: string;
+  description: string;
+  imageurl?: string;
+  slug?: string;
+  status?: 'active' | 'inactive';
+}
+
+export interface UpdateCategoryRequest extends CreateCategoryRequest {
+  id: string;
+}
+
+export interface ToggleCategoryStatusRequest {
+  categoryId: string;
+  status: 'active' | 'inactive';
 }
