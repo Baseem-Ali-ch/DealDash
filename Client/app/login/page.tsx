@@ -13,6 +13,7 @@ import AuthInput from "@/atoms/auth-input"
 import AuthButton from "@/atoms/auth-button"
 import AuthDivider from "@/atoms/auth-divider"
 import SocialAuthButton from "@/molecules/social-auth-button"
+import { loginUser } from "@/lib/api/user/auth"
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -84,20 +85,12 @@ export default function LoginPage() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      // Simulate successful login
-      // In a real app, you would call your auth API here
-      // const response = await fetch('/api/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email: formData.email, password: formData.password, rememberMe })
-      // })
-
-      // if (!response.ok) throw new Error('Login failed')
-      // const data = await response.json()
-
-      // Store token in localStorage or cookies
-      localStorage.setItem("authToken", "sample-token-12345")
-
+      const userData = {
+        email: formData.email,
+        password: formData.password,
+      }
+      const response = await loginUser(userData)
+      
       // Redirect to home page
       router.push("/")
     } catch (error) {

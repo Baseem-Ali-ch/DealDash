@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShoppingCart, Heart, Menu, X } from "lucide-react";
+import { ShoppingCart, Heart, Menu, X, User, LogInIcon } from "lucide-react";
 import { ThemeToggle } from "@/molecules/theme-toggle";
 import { SearchBar } from "@/molecules/search-bar";
 import { IconButton } from "@/atoms/icon-button";
 import { useAppSelector, useAppDispatch } from "@/lib/hooks/use-redux";
 import { toggleCart } from "@/lib/store/slices/cartSlice";
 import { cn } from "@/lib/utils/utils";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const categories = [
   {
@@ -40,6 +42,8 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const router = useRouter();
 
   const cartItemsCount = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -54,6 +58,12 @@ export function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // useEffect(() => {
+  //   const token = Cookies.get("auth_token");
+  //   console.log("token", token);
+  //   setIsLoggedIn(!!token);
+  // }, []);
 
   return (
     <header
@@ -122,6 +132,20 @@ export function Header() {
                 </span>
               )}
             </div>
+
+            {isLoggedIn ? (
+              <Link href="/account">
+                <IconButton variant="ghost" aria-label="Account">
+                  <User className="h-5 w-5" />
+                </IconButton>
+              </Link>
+            ) : (
+              <Link href="/login">
+                <IconButton variant="ghost" aria-label="Account">
+                  <LogInIcon className="h-5 w-5" />
+                </IconButton>
+              </Link>
+            )}
 
             <ThemeToggle />
 

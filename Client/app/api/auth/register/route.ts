@@ -3,6 +3,8 @@ import { hash } from "bcryptjs";
 import crypto from "crypto";
 import prisma from "@/lib/prisma"; // Import the singleton instance
 import { sendVerificationEmail } from "@/lib/utils/mail";
+import jwt from "jsonwebtoken";
+import { serialize } from "cookie";
 
 export async function POST(request: Request) {
   try {
@@ -59,14 +61,31 @@ export async function POST(request: Request) {
       );
     }
 
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET || "deal_dash_sample_secret_key",
+      { expiresIn: "1d" }
+    );
+
+    const cookie = serialize("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60,
+      path: "/",
+    });
+
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       data: userWithoutPassword,
       message: "Registration successful",
     });
+
+    response.headers.set("Set-Cookie", cookie);
+    return response;
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json(
@@ -75,5 +94,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-

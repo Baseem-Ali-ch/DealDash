@@ -27,14 +27,14 @@ export const AccountSidebar = ({
   return (
     <aside
       className={cn(
-        "w-64 border-r border-gray-200 dark:border-gray-800 h-screen sticky top-0 overflow-y-auto py-6 px-3 hidden md:block",
+        "w-64 border-r border-gray-200 dark:border-gray-800 h-screen sticky top-0 overflow-y-auto pt-28 px-3 hidden md:block",
         className
       )}
     >
       <div className="flex flex-col h-full">
-        <div className="px-3 mb-6">
+        {/* <div className="px-3 mb-6">
           <h2 className="text-xl font-bold">My Account</h2>
-        </div>
+        </div> */}
 
         <nav className="space-y-1 flex-1">
           <SidebarItem
@@ -80,13 +80,7 @@ export const AccountSidebar = ({
           />
         </nav>
 
-        <div className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-800">
-          <div className="flex items-center justify-between px-3 mb-4">
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Theme
-            </span>
-            <ThemeToggle />
-          </div>
+        <div className="mt-auto pt-6 pb-6 border-t border-gray-200 dark:border-gray-800">
           <Button variant="outline" className="w-full justify-start">
             <LogOut className="h-4 w-4 mr-2" />
             Sign Out
