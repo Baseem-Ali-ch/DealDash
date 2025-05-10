@@ -1,120 +1,169 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
-import { motion } from "framer-motion"
-import { Mail, CheckCircle, AlertCircle } from "lucide-react"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import { Mail, CheckCircle, AlertCircle } from "lucide-react";
 
-import AuthLayout from "@/templates/auth-layout"
-import AuthButton from "@/atoms/auth-button"
-import AuthInput from "@/atoms/auth-input"
+import AuthLayout from "@/templates/auth-layout";
+import AuthButton from "@/atoms/auth-button";
+import AuthInput from "@/atoms/auth-input";
+import { toast } from "sonner";
 
 export default function VerifyEmailPage() {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const email = searchParams.get("email") || ""
-  const token = searchParams.get("token")
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const email = searchParams.get("email") || "";
+  const token = searchParams.get("token");
 
-  const [countdown, setCountdown] = useState(30)
-  const [isResending, setIsResending] = useState(false)
-  const [resendError, setResendError] = useState("")
-  const [resendSuccess, setResendSuccess] = useState(false)
-  const [verificationStatus, setVerificationStatus] = useState<"pending" | "success" | "error">(
-    token ? "pending" : "pending",
-  )
-  const [showChangeEmail, setShowChangeEmail] = useState(false)
-  const [newEmail, setNewEmail] = useState("")
-  const [emailError, setEmailError] = useState("")
+  const [countdown, setCountdown] = useState(30);
+  const [isResending, setIsResending] = useState(false);
+  const [resendError, setResendError] = useState("");
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<
+    "pending" | "success" | "error"
+  >(token ? "pending" : "pending");
+  const [showChangeEmail, setShowChangeEmail] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [verifying, setVerifying] = useState(true);
 
-  // Handle token verification
   useEffect(() => {
-    if (token) {
-      verifyToken(token)
+    async function verifyEmail() {
+      try {
+        const response = await fetch(`/api/auth/verify-email?token=${token}`);
+        const data = await response.json();
+
+        if (data.success) {
+          toast({
+            title: "Success",
+            description: "Your email has been verified. You can now sign in.",
+            variant: "success",
+          });
+          router.push("/login");
+        } else {
+          throw new Error(data.error);
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description:
+            error instanceof Error ? error.message : "Verification failed",
+          variant: "destructive",
+        });
+        router.push("/register");
+      } finally {
+        setVerifying(false);
+      }
     }
-  }, [token])
+
+    if (token) {
+      verifyEmail();
+    }
+  }, [token, router]);
 
   // Countdown timer
   useEffect(() => {
     if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000)
-      return () => clearTimeout(timer)
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
     }
-  }, [countdown])
+  }, [countdown]);
 
   // Verify the token
   const verifyToken = async (token: string) => {
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // In a real app, you would call your API to verify the token
       // const response = await fetch(`/api/verify-email?token=${token}`)
       // if (!response.ok) throw new Error('Verification failed')
 
-      setVerificationStatus("success")
+      setVerificationStatus("success");
 
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        router.push("/login")
-      }, 3000)
+        router.push("/login");
+      }, 3000);
     } catch (error) {
-      console.error("Verification error:", error)
-      setVerificationStatus("error")
+      console.error("Verification error:", error);
+      setVerificationStatus("error");
     }
-  }
+  };
 
   // Resend verification email
   const handleResend = async () => {
-    setIsResending(true)
-    setResendError("")
-    setResendSuccess(false)
+    setIsResending(true);
+    setResendError("");
+    setResendSuccess(false);
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // In a real app, you would call your API to resend the email
-      // const response = await fetch('/api/resend-verification', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email })
-      // })
-      // if (!response.ok) throw new Error('Failed to resend verification email')
+      async function verifyEmail() {
+        try {
+          const response = await fetch(`/api/auth/verify-email?token=${token}`);
+          const data = await response.json();
 
-      setResendSuccess(true)
-      setCountdown(30)
+          if (data.success) {
+            toast({
+              title: "Success",
+              description: "Your email has been verified. You can now sign in.",
+              variant: "success",
+            });
+            router.push("/login");
+          } else {
+            throw new Error(data.error);
+          }
+        } catch (error) {
+          toast({
+            title: "Error",
+            description:
+              error instanceof Error ? error.message : "Verification failed",
+            variant: "destructive",
+          });
+          router.push("/register");
+        } finally {
+          setVerifying(false);
+        }
+      }
+
+      setResendSuccess(true);
+      setCountdown(30);
     } catch (error) {
-      console.error("Resend error:", error)
-      setResendError("Failed to resend verification email. Please try again.")
+      console.error("Resend error:", error);
+      setResendError("Failed to resend verification email. Please try again.");
     } finally {
-      setIsResending(false)
+      setIsResending(false);
     }
-  }
+  };
 
   // Change email address
   const handleChangeEmail = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!newEmail) {
-      setEmailError("Please enter your email")
-      return
+      setEmailError("Please enter your email");
+      return;
     }
 
     if (!/\S+@\S+\.\S+/.test(newEmail)) {
-      setEmailError("Please enter a valid email")
-      return
+      setEmailError("Please enter a valid email");
+      return;
     }
 
-    setIsResending(true)
-    setResendError("")
-    setEmailError("")
+    setIsResending(true);
+    setResendError("");
+    setEmailError("");
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       // In a real app, you would call your API to update the email
       // const response = await fetch('/api/update-email', {
@@ -125,31 +174,35 @@ export default function VerifyEmailPage() {
       // if (!response.ok) throw new Error('Failed to update email')
 
       // Update URL with new email
-      router.push(`/verify-email?email=${encodeURIComponent(newEmail)}`)
+      router.push(`/verify-email?email=${encodeURIComponent(newEmail)}`);
 
-      setResendSuccess(true)
-      setShowChangeEmail(false)
-      setCountdown(30)
+      setResendSuccess(true);
+      setShowChangeEmail(false);
+      setCountdown(30);
     } catch (error) {
-      console.error("Change email error:", error)
-      setResendError("Failed to update email. Please try again.")
+      console.error("Change email error:", error);
+      setResendError("Failed to update email. Please try again.");
     } finally {
-      setIsResending(false)
+      setIsResending(false);
     }
-  }
+  };
 
   // Show pending verification screen
   if (verificationStatus === "pending" && !token) {
     return (
-      <AuthLayout title="Check your email" subtitle={`We've sent a verification link to ${email}`}>
+      <AuthLayout
+        title="Check your email"
+        subtitle={`We've sent a verification link to ${email}`}
+      >
         <div className="flex flex-col items-center justify-center">
           <div className="w-20 h-20 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mb-6">
             <Mail className="h-10 w-10 text-primary" />
           </div>
 
           <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
-            Please check your inbox and click on the verification link to activate your account. If you don't see the
-            email, check your spam folder.
+            Please check your inbox and click on the verification link to
+            activate your account. If you don't see the email, check your spam
+            folder.
           </p>
 
           {resendSuccess && (
@@ -182,7 +235,9 @@ export default function VerifyEmailPage() {
                     disabled={isResending || countdown > 0}
                     variant="outline"
                   >
-                    {countdown > 0 ? `Resend email (${countdown}s)` : "Resend verification email"}
+                    {countdown > 0
+                      ? `Resend email (${countdown}s)`
+                      : "Resend verification email"}
                   </AuthButton>
                 </div>
 
@@ -201,8 +256,8 @@ export default function VerifyEmailPage() {
                   type="email"
                   value={newEmail}
                   onChange={(e) => {
-                    setNewEmail(e.target.value)
-                    if (emailError) setEmailError("")
+                    setNewEmail(e.target.value);
+                    if (emailError) setEmailError("");
                   }}
                   error={emailError}
                   placeholder="Enter your new email"
@@ -210,11 +265,19 @@ export default function VerifyEmailPage() {
                 />
 
                 <div className="flex space-x-3">
-                  <AuthButton type="submit" isLoading={isResending} disabled={isResending}>
+                  <AuthButton
+                    type="submit"
+                    isLoading={isResending}
+                    disabled={isResending}
+                  >
                     Update Email
                   </AuthButton>
 
-                  <AuthButton onClick={() => setShowChangeEmail(false)} variant="outline" disabled={isResending}>
+                  <AuthButton
+                    onClick={() => setShowChangeEmail(false)}
+                    variant="outline"
+                    disabled={isResending}
+                  >
                     Cancel
                   </AuthButton>
                 </div>
@@ -241,43 +304,58 @@ export default function VerifyEmailPage() {
           </div>
         </div>
       </AuthLayout>
-    )
+    );
   }
 
   // Show verification success screen
   if (verificationStatus === "success") {
     return (
-      <AuthLayout title="Email Verified!" subtitle="Your account has been successfully activated">
+      <AuthLayout
+        title="Email Verified!"
+        subtitle="Your account has been successfully activated"
+      >
         <div className="flex flex-col items-center justify-center">
           <div className="w-20 h-20 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-6">
             <CheckCircle className="h-10 w-10 text-green-500" />
           </div>
 
           <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
-            Thank you for verifying your email address. You will be redirected to the login page shortly.
+            Thank you for verifying your email address. You will be redirected
+            to the login page shortly.
           </p>
 
-          <AuthButton onClick={() => router.push("/login")}>Go to Login</AuthButton>
+          <AuthButton onClick={() => router.push("/login")}>
+            Go to Login
+          </AuthButton>
         </div>
       </AuthLayout>
-    )
+    );
   }
 
   // Show verification error screen
   if (verificationStatus === "error") {
     return (
-      <AuthLayout title="Verification Failed" subtitle="We couldn't verify your email address">
+      <AuthLayout
+        title="Verification Failed"
+        subtitle="We couldn't verify your email address"
+      >
         <div className="flex flex-col items-center justify-center">
           <div className="w-20 h-20 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-6">
             <AlertCircle className="h-10 w-10 text-red-500" />
           </div>
 
           <p className="text-center text-gray-600 dark:text-gray-400 mb-6">
-            The verification link is invalid or has expired. Please try resending the verification email.
+            The verification link is invalid or has expired. Please try
+            resending the verification email.
           </p>
 
           <div className="space-y-4 w-full">
-            <AuthButton onClick={() => router.push(`/verify-email?email=${encodeURIComponent(email)}`)} fullWidth>
+            <AuthButton
+              onClick={() =>
+                router.push(`/verify-email?email=${encodeURIComponent(email)}`)
+              }
+              fullWidth
+            >
               Try Again
             </AuthButton>
 
@@ -292,8 +370,8 @@ export default function VerifyEmailPage() {
           </div>
         </div>
       </AuthLayout>
-    )
+    );
   }
 
-  return null
+  return null;
 }
